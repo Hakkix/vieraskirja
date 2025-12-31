@@ -99,13 +99,13 @@ export function GuestbookForm() {
 }
 
 export function GuestbookEntries() {
-  const [{ posts, nextCursor }, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
+  const [data, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
     api.post.getAll.useSuspenseInfiniteQuery(
       { limit: 10 },
       { getNextPageParam: (lastPage) => lastPage.nextCursor },
     );
 
-  const allPosts = posts?.pages.flatMap((page) => page.posts) ?? [];
+  const allPosts = data.pages.flatMap((page) => page.posts);
 
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4">
