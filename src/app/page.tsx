@@ -12,8 +12,8 @@ export default async function Home() {
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
               Vieraskirja
             </h1>
-            <p className="text-lg sm:text-xl text-white/70 max-w-md">
-              Sign our guestbook and leave a message!
+            <p className="text-lg sm:text-xl text-white/80 max-w-md">
+              Kirjoita vieraskirjaamme ja jätä viestisi!
             </p>
           </div>
 
