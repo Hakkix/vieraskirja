@@ -22,7 +22,7 @@ Varmista, että koneeltasi löytyy **Node.js** (versio 18 tai uudempi) ja **npm*
 Kloonaa repositorio ja asenna riippuvuudet:
 
 ```bash
-git clone [https://github.com/KAYTTAJANIMI/vieraskirja.git](https://github.com/KAYTTAJANIMI/vieraskirja.git)
+git clone [https://github.com/Hakkix/vieraskirja.git](https://github.com/Hakkix/vieraskirja.git)
 cd vieraskirja
 npm install
 
