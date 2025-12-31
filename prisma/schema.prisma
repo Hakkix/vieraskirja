@@ -14,7 +14,7 @@ datasource db {
 model Post {
     id        Int      @id @default(autoincrement())
     name      String
-    message   String
+    message   String   @default("")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
