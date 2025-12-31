@@ -10,8 +10,8 @@ import type { AppRouter } from "~/server/api/root";
 
 // Client-side validation schema matching server schema
 const guestbookSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  message: z.string().min(1, "Message is required").max(500, "Message must be 500 characters or less"),
+  name: z.string().min(1, "Nimi on pakollinen"),
+  message: z.string().min(1, "Viesti on pakollinen").max(500, "Viestin maksimipituus on 500 merkkiä"),
 });
 
 type ValidationErrors = {
@@ -98,22 +98,22 @@ export function GuestbookForm() {
         noValidate
       >
         <div className="space-y-2">
-          <label htmlFor="name" className="sr-only">
-            Your Name
+          <label htmlFor="name" className="block text-sm font-medium text-white/90">
+            Nimi
           </label>
           <input
             id="name"
             type="text"
-            placeholder="Your name"
+            placeholder="Nimesi"
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
-            className={`w-full rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 ${
+            className={`w-full rounded-lg bg-white/15 px-4 py-3 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
               validationErrors.name
                 ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
                 : "focus:ring-white/30"
             }`}
             disabled={createPost.isPending}
-            aria-label="Your name"
+            aria-label="Nimi"
             aria-invalid={!!validationErrors.name}
             aria-describedby={validationErrors.name ? "name-error" : undefined}
           />
@@ -136,23 +136,23 @@ export function GuestbookForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="message" className="sr-only">
-            Your Message
+          <label htmlFor="message" className="block text-sm font-medium text-white/90">
+            Viesti
           </label>
           <textarea
             id="message"
-            placeholder="Share your thoughts..."
+            placeholder="Jaa ajatuksesi..."
             value={message}
             onChange={(e) => handleMessageChange(e.target.value)}
             maxLength={maxCharacters}
             rows={4}
-            className={`w-full resize-none rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 ${
+            className={`w-full resize-none rounded-lg bg-white/15 px-4 py-3 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
               validationErrors.message
                 ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
                 : "focus:ring-white/30"
             }`}
             disabled={createPost.isPending}
-            aria-label="Your message"
+            aria-label="Viesti"
             aria-invalid={!!validationErrors.message}
             aria-describedby={validationErrors.message ? "message-error" : undefined}
           />
@@ -175,26 +175,26 @@ export function GuestbookForm() {
           <div className="flex items-center justify-between text-sm">
             <span
               className={`transition-colors ${
-                characterWarning ? "text-yellow-400" : "text-white/50"
+                characterWarning ? "text-yellow-400" : "text-white/60"
               }`}
             >
-              {characterCount} / {maxCharacters} characters
+              {characterCount} / {maxCharacters} merkkiä
             </span>
           </div>
         </div>
 
         <button
           type="submit"
-          className="rounded-lg bg-white/10 px-10 py-3 font-semibold transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 px-10 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-200 hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
           disabled={createPost.isPending}
         >
           {createPost.isPending ? (
             <span className="flex items-center justify-center gap-2">
               <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-              Submitting...
+              Lähetetään...
             </span>
           ) : (
-            "Sign Guestbook"
+            "Kirjoita vieraskirjaan"
           )}
         </button>
       </form>
@@ -213,7 +213,7 @@ export function GuestbookForm() {
             >
               <path d="M5 13l4 4L19 7"></path>
             </svg>
-            Thanks for signing our guestbook!
+            Kiitos vieraskirjamerkinnästäsi!
           </p>
         </div>
       )}
@@ -259,14 +259,14 @@ export function GuestbookEntries() {
       const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
       if (diffInHours === 0) {
         const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-        return diffInMinutes <= 1 ? "Just now" : `${diffInMinutes}m ago`;
+        return diffInMinutes <= 1 ? "Juuri nyt" : `${diffInMinutes}min sitten`;
       }
-      return diffInHours === 1 ? "1h ago" : `${diffInHours}h ago`;
+      return diffInHours === 1 ? "1t sitten" : `${diffInHours}t sitten`;
     }
-    if (diffInDays === 1) return "Yesterday";
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diffInDays === 1) return "Eilen";
+    if (diffInDays < 7) return `${diffInDays}pv sitten`;
 
-    return postDate.toLocaleDateString("en-US", {
+    return postDate.toLocaleDateString("fi-FI", {
       month: "short",
       day: "numeric",
       year: postDate.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
@@ -276,10 +276,10 @@ export function GuestbookEntries() {
   return (
     <div className="flex w-full max-w-2xl flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">Guestbook Entries</h2>
+        <h2 className="text-3xl font-bold">Vieraskirjamerkinnät</h2>
         {allPosts.length > 0 && (
           <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white/70">
-            {allPosts.length} {allPosts.length === 1 ? "entry" : "entries"}
+            {allPosts.length} {allPosts.length === 1 ? "merkintä" : "merkintää"}
           </span>
         )}
       </div>
@@ -297,8 +297,8 @@ export function GuestbookEntries() {
           >
             <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
           </svg>
-          <p className="text-lg font-medium text-white/70">No entries yet</p>
-          <p className="text-sm text-white/50">Be the first to sign our guestbook!</p>
+          <p className="text-lg font-medium text-white/70">Ei vielä merkintöjä</p>
+          <p className="text-sm text-white/50">Ole ensimmäinen kirjoittamassa vieraskirjaan!</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
@@ -333,15 +333,15 @@ export function GuestbookEntries() {
         <button
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
-          className="rounded-lg bg-white/10 px-6 py-3 font-semibold transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-200 hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
         >
           {isFetchingNextPage ? (
             <span className="flex items-center justify-center gap-2">
               <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-              Loading...
+              Ladataan...
             </span>
           ) : (
-            "Load More"
+            "Lataa lisää"
           )}
         </button>
       )}
