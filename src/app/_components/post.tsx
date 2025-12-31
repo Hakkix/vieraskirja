@@ -1,14 +1,31 @@
 "use client";
 
+import type { FormEvent } from "react";
 import { useState } from "react";
+import type { TRPCClientErrorLike } from "@trpc/client";
+import { z } from "zod";
 
 import { api } from "~/trpc/react";
+import type { AppRouter } from "~/server/api/root";
+
+// Client-side validation schema matching server schema
+const guestbookSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  message: z.string().min(1, "Message is required").max(500, "Message must be 500 characters or less"),
+});
+
+type ValidationErrors = {
+  name?: string;
+  message?: string;
+};
 
 export function GuestbookForm() {
   const utils = api.useUtils();
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const createPost = api.post.create.useMutation({
     onSuccess: async () => {
@@ -16,7 +33,13 @@ export function GuestbookForm() {
       setName("");
       setMessage("");
       setShowSuccess(true);
+      setValidationErrors({});
+      setServerError(null);
       setTimeout(() => setShowSuccess(false), 3000);
+    },
+    onError: (error: TRPCClientErrorLike<AppRouter>) => {
+      // Handle server-side errors
+      setServerError(error.message ?? "An error occurred. Please try again.");
     },
   });
 
@@ -24,14 +47,55 @@ export function GuestbookForm() {
   const maxCharacters = 500;
   const characterWarning = characterCount > maxCharacters * 0.9;
 
+  // Validate form before submission
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    // Clear previous errors
+    setValidationErrors({});
+    setServerError(null);
+
+    // Validate input
+    const result = guestbookSchema.safeParse({ name, message });
+
+    if (!result.success) {
+      // Extract validation errors
+      const errors: ValidationErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof ValidationErrors;
+        if (field) {
+          errors[field] = issue.message;
+        }
+      });
+      setValidationErrors(errors);
+      return;
+    }
+
+    // Submit if validation passes
+    createPost.mutate({ name, message });
+  };
+
+  // Clear field error on input change
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (validationErrors.name) {
+      setValidationErrors((prev) => ({ ...prev, name: undefined }));
+    }
+  };
+
+  const handleMessageChange = (value: string) => {
+    setMessage(value);
+    if (validationErrors.message) {
+      setValidationErrors((prev) => ({ ...prev, message: undefined }));
+    }
+  };
+
   return (
     <div className="w-full max-w-2xl space-y-4">
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          createPost.mutate({ name, message });
-        }}
+        onSubmit={handleSubmit}
         className="flex w-full flex-col gap-4"
+        noValidate
       >
         <div className="space-y-2">
           <label htmlFor="name" className="sr-only">
@@ -42,12 +106,33 @@ export function GuestbookForm() {
             type="text"
             placeholder="Your name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30"
-            required
+            onChange={(e) => handleNameChange(e.target.value)}
+            className={`w-full rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 ${
+              validationErrors.name
+                ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
+                : "focus:ring-white/30"
+            }`}
             disabled={createPost.isPending}
             aria-label="Your name"
+            aria-invalid={!!validationErrors.name}
+            aria-describedby={validationErrors.name ? "name-error" : undefined}
           />
+          {validationErrors.name && (
+            <p id="name-error" className="text-sm text-red-400 flex items-center gap-1">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {validationErrors.name}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -58,14 +143,35 @@ export function GuestbookForm() {
             id="message"
             placeholder="Share your thoughts..."
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => handleMessageChange(e.target.value)}
             maxLength={maxCharacters}
             rows={4}
-            className="w-full resize-none rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30"
-            required
+            className={`w-full resize-none rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 ${
+              validationErrors.message
+                ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
+                : "focus:ring-white/30"
+            }`}
             disabled={createPost.isPending}
             aria-label="Your message"
+            aria-invalid={!!validationErrors.message}
+            aria-describedby={validationErrors.message ? "message-error" : undefined}
           />
+          {validationErrors.message && (
+            <p id="message-error" className="text-sm text-red-400 flex items-center gap-1">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {validationErrors.message}
+            </p>
+          )}
           <div className="flex items-center justify-between text-sm">
             <span
               className={`transition-colors ${
@@ -108,6 +214,25 @@ export function GuestbookForm() {
               <path d="M5 13l4 4L19 7"></path>
             </svg>
             Thanks for signing our guestbook!
+          </p>
+        </div>
+      )}
+
+      {serverError && (
+        <div className="animate-fade-in rounded-lg bg-red-500/20 border border-red-500/30 px-4 py-3 text-red-100">
+          <p className="flex items-center gap-2">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {serverError}
           </p>
         </div>
       )}
