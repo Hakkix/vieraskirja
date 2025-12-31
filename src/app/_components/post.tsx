@@ -8,48 +8,110 @@ export function GuestbookForm() {
   const utils = api.useUtils();
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const createPost = api.post.create.useMutation({
     onSuccess: async () => {
       await utils.post.invalidate();
       setName("");
       setMessage("");
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     },
   });
 
+  const characterCount = message.length;
+  const maxCharacters = 500;
+  const characterWarning = characterCount > maxCharacters * 0.9;
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        createPost.mutate({ name, message });
-      }}
-      className="flex w-full max-w-2xl flex-col gap-3"
-    >
-      <input
-        type="text"
-        placeholder="Your name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="w-full rounded-lg bg-white/10 px-4 py-2 text-white placeholder:text-white/50"
-        required
-      />
-      <textarea
-        placeholder="Your message (max 500 characters)"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        maxLength={500}
-        rows={4}
-        className="w-full rounded-lg bg-white/10 px-4 py-2 text-white placeholder:text-white/50"
-        required
-      />
-      <button
-        type="submit"
-        className="rounded-lg bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20 disabled:opacity-50"
-        disabled={createPost.isPending}
+    <div className="w-full max-w-2xl space-y-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          createPost.mutate({ name, message });
+        }}
+        className="flex w-full flex-col gap-4"
       >
-        {createPost.isPending ? "Submitting..." : "Sign Guestbook"}
-      </button>
-    </form>
+        <div className="space-y-2">
+          <label htmlFor="name" className="sr-only">
+            Your Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30"
+            required
+            disabled={createPost.isPending}
+            aria-label="Your name"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="message" className="sr-only">
+            Your Message
+          </label>
+          <textarea
+            id="message"
+            placeholder="Share your thoughts..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            maxLength={maxCharacters}
+            rows={4}
+            className="w-full resize-none rounded-lg bg-white/10 px-4 py-3 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30"
+            required
+            disabled={createPost.isPending}
+            aria-label="Your message"
+          />
+          <div className="flex items-center justify-between text-sm">
+            <span
+              className={`transition-colors ${
+                characterWarning ? "text-yellow-400" : "text-white/50"
+              }`}
+            >
+              {characterCount} / {maxCharacters} characters
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="rounded-lg bg-white/10 px-10 py-3 font-semibold transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          disabled={createPost.isPending}
+        >
+          {createPost.isPending ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
+              Submitting...
+            </span>
+          ) : (
+            "Sign Guestbook"
+          )}
+        </button>
+      </form>
+
+      {showSuccess && (
+        <div className="animate-fade-in rounded-lg bg-green-500/20 border border-green-500/30 px-4 py-3 text-green-100">
+          <p className="flex items-center gap-2">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M5 13l4 4L19 7"></path>
+            </svg>
+            Thanks for signing our guestbook!
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -62,36 +124,100 @@ export function GuestbookEntries() {
 
   const allPosts = data.pages.flatMap((page) => page.posts);
 
+  const formatDate = (date: Date) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diffInMs = now.getTime() - postDate.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) {
+      const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+      if (diffInHours === 0) {
+        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+        return diffInMinutes <= 1 ? "Just now" : `${diffInMinutes}m ago`;
+      }
+      return diffInHours === 1 ? "1h ago" : `${diffInHours}h ago`;
+    }
+    if (diffInDays === 1) return "Yesterday";
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+
+    return postDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: postDate.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+    });
+  };
+
   return (
-    <div className="flex w-full max-w-2xl flex-col gap-4">
-      <h2 className="text-2xl font-bold">Guestbook Entries</h2>
+    <div className="flex w-full max-w-2xl flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold">Guestbook Entries</h2>
+        {allPosts.length > 0 && (
+          <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white/70">
+            {allPosts.length} {allPosts.length === 1 ? "entry" : "entries"}
+          </span>
+        )}
+      </div>
+
       {allPosts.length === 0 ? (
-        <p className="text-white/70">No entries yet. Be the first to sign!</p>
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 py-16 px-4">
+          <svg
+            className="mb-4 h-16 w-16 text-white/30"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+          </svg>
+          <p className="text-lg font-medium text-white/70">No entries yet</p>
+          <p className="text-sm text-white/50">Be the first to sign our guestbook!</p>
+        </div>
       ) : (
-        <div className="flex flex-col gap-4">
-          {allPosts.map((post) => (
+        <div className="flex flex-col gap-3">
+          {allPosts.map((post, index) => (
             <div
               key={post.id}
-              className="rounded-lg bg-white/10 p-4 backdrop-blur-sm"
+              className="group rounded-lg bg-white/10 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] hover:scale-[1.01] animate-fade-in"
+              style={{
+                animationDelay: `${index * 50}ms`,
+              }}
             >
-              <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold text-white">{post.name}</h3>
-                <span className="text-sm text-white/50">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </span>
+              <div className="mb-3 flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white shadow-lg">
+                    {post.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white">{post.name}</h3>
+                    <time className="text-xs text-white/50" dateTime={post.createdAt.toISOString()}>
+                      {formatDate(post.createdAt)}
+                    </time>
+                  </div>
+                </div>
               </div>
-              <p className="text-white/90">{post.message}</p>
+              <p className="text-white/90 leading-relaxed pl-[52px]">{post.message}</p>
             </div>
           ))}
         </div>
       )}
+
       {hasNextPage && (
         <button
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
-          className="rounded-lg bg-white/10 px-6 py-2 font-semibold transition hover:bg-white/20 disabled:opacity-50"
+          className="rounded-lg bg-white/10 px-6 py-3 font-semibold transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          {isFetchingNextPage ? "Loading..." : "Load More"}
+          {isFetchingNextPage ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
+              Loading...
+            </span>
+          ) : (
+            "Load More"
+          )}
         </button>
       )}
     </div>
