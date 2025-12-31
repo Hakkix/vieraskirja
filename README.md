@@ -1,6 +1,6 @@
 # Vieraskirja (Guestbook)
 
-Tämä on moderni Fullstack-sovellus, joka on rakennettu käyttäen **T3 Stackia**. Sovellus toimii vieraskirjana, johon käyttäjät voivat jättää nimensä ja viestin. Viestit tallentuvat tietokantaan ja näkyvät reaaliaikaisesti listalla.
+Tämä on moderni Fullstack-sovellus, joka on rakennettu käyttäen **T3 Stackia**. Sovellus toimii vieraskirjana, johon käyttäjät voivat jättää nimensä ja viestinsä. Viestit tallentuvat tietokantaan ja näkyvät reaaliaikaisesti listalla.
 
 ## 🛠 Teknologiat (The T3 Stack)
 
@@ -51,7 +51,7 @@ npx prisma db push
 
 ```
 
-*Tämä luo `GuestbookEntry`-taulun tietokantaan.*
+*Tämä luo `Post`-taulun tietokantaan, joka sisältää kentät: id, name, message, createdAt, updatedAt.*
 
 ### 5. Käynnistä sovellus
 
@@ -100,9 +100,10 @@ docker run -p 3000:3000 \
 ## 🗂 Projektin rakenne
 
 * `src/app` - Frontend-sivut ja komponentit (Next.js App Router).
-* `src/server/api/routers` - Backend-logiikka ja tRPC-routerit (esim. `guestbook.ts`).
+* `src/server/api/routers` - Backend-logiikka ja tRPC-routerit (esim. `post.ts`).
 * `src/server/db.ts` - Prisman tietokantayhteys.
 * `prisma/schema.prisma` - Tietokannan skeema ja mallit.
+* `src/trpc` - tRPC-konfiguraatio ja React Query -integraatio.
 
 ## 🧪 Testaus
 
