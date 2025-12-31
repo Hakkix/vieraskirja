@@ -1,0 +1,65 @@
+# TODO - Vieraskirja
+
+## High Priority
+
+- [ ] Add message field to Post model (currently only stores name)
+- [ ] Implement pagination for guestbook entries
+- [ ] Add form validation and error handling on the client side
+- [ ] Set up production database (PostgreSQL)
+
+## Features
+
+- [ ] Add ability to edit/delete posts
+- [ ] Implement search/filter functionality
+- [ ] Add user avatars or profile pictures
+- [ ] Add email notification for new entries
+- [ ] Implement rate limiting to prevent spam
+- [ ] Add moderation/admin panel
+
+## UI/UX Improvements
+
+- [ ] Add loading states and skeletons
+- [ ] Improve responsive design for mobile devices
+- [ ] Add animations for new post submissions
+- [ ] Create custom 404 and error pages
+- [ ] Add dark mode toggle
+
+## Technical Debt
+
+- [ ] Add unit tests for tRPC routers
+- [ ] Add E2E tests with Playwright or Cypress
+- [ ] Set up CI/CD pipeline
+- [ ] Add error monitoring (Sentry)
+- [ ] Implement proper logging
+- [ ] Add API rate limiting
+- [ ] Set up database migrations workflow
+
+## Documentation
+
+- [ ] Add API documentation
+- [ ] Create contributing guidelines
+- [ ] Add deployment guide
+- [ ] Document environment variables
+
+## Performance
+
+- [ ] Implement caching strategy
+- [ ] Optimize database queries with proper indexes
+- [ ] Add image optimization if avatars are implemented
+- [ ] Implement infinite scroll or virtual scrolling
+
+## Security
+
+- [ ] Add CSRF protection
+- [ ] Implement input sanitization for XSS prevention
+- [ ] Add content security policy (CSP)
+- [ ] Set up security headers
+- [ ] Add SQL injection prevention checks
+
+## Nice to Have
+
+- [ ] Export guestbook entries to PDF/CSV
+- [ ] Add emoji reactions to posts
+- [ ] Implement real-time updates with WebSockets
+- [ ] Add internationalization (i18n) support
+- [ ] Create public API with authentication
