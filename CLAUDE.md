@@ -54,6 +54,7 @@ Located in `prisma/schema.prisma`
 model Post {
     id        Int      @id @default(autoincrement())
     name      String
+    message   String   @default("")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -77,13 +78,19 @@ All API logic is in `src/server/api/routers/post.ts`
    - Purpose: Demo endpoint
 
 2. **create** (mutation)
-   - Input: `{ name: string }` (min length: 1)
-   - Creates a new post entry
+   - Input: `{ name: string, message: string }` (both min length: 1, message max: 500)
+   - Creates a new post entry with name and message
    - Returns: Created post object
 
 3. **getLatest** (query)
    - No input required
    - Returns: Latest post (by createdAt) or null
+
+4. **getAll** (query)
+   - Input: `{ limit?: number (1-100, default: 10), cursor?: number }`
+   - Returns: Paginated posts with cursor-based pagination
+   - Output: `{ posts: Post[], nextCursor?: number }`
+   - Posts are ordered by createdAt descending
 
 ### Adding New Endpoints
 
@@ -187,7 +194,8 @@ const schema = z.object({
    model Post {
      id        Int      @id @default(autoincrement())
      name      String
-     message   String   // New field
+     message   String
+     email     String   // New field example
      createdAt DateTime @default(now())
      updatedAt DateTime @updatedAt
    }

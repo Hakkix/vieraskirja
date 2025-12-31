@@ -1,11 +1,15 @@
 # TODO - Vieraskirja
 
+## Completed ✓
+
+- [x] Add message field to Post model
+- [x] Implement pagination for guestbook entries (cursor-based pagination via `getAll` endpoint)
+
 ## High Priority
 
-- [ ] Add message field to Post model (currently only stores name)
-- [ ] Implement pagination for guestbook entries
 - [ ] Add form validation and error handling on the client side
 - [ ] Set up production database (PostgreSQL)
+- [ ] Display all guestbook entries with pagination UI
 
 ## Features
 
