@@ -4,6 +4,15 @@
 
 **Vieraskirja** (Finnish for "Guestbook") is a modern fullstack web application built with the T3 Stack. It serves as a guestbook where users can leave their name and messages, which are stored in a database and displayed in real-time.
 
+## Features
+
+✅ **Implemented:**
+- **Form Validation & Error Handling** - Client-side validation with Zod, real-time error feedback, character count, and accessibility features
+- **Pagination UI** - Infinite scroll with cursor-based pagination, "Load more" button, and smooth loading states
+- **Production Database** - PostgreSQL support with complete migration setup
+- **Modern UI/UX** - Gradient backgrounds, smooth animations, responsive design, and Finnish language support
+- **Type Safety** - End-to-end type safety with tRPC and TypeScript
+
 ## Tech Stack (T3 Stack)
 
 - **Framework:** Next.js 15.2.3 (App Router)
@@ -62,9 +71,11 @@ model Post {
 }
 ```
 
-**Database Provider:** SQLite (default, can be changed to PostgreSQL for production)
+**Database Provider:** PostgreSQL (recommended for production)
 
 **Generated Client Location:** `generated/prisma` (custom output path)
+
+**Note:** For local development, you can use PostgreSQL locally or switch to SQLite by changing the `provider` in `prisma/schema.prisma` to `"sqlite"` and updating the `DATABASE_URL` in `.env`.
 
 ## API Endpoints (tRPC)
 
@@ -106,10 +117,23 @@ To add new tRPC procedures:
 ### Environment Setup
 
 1. **Environment Variables** (`.env`):
+
+   Create a `.env` file in the root directory (copy from `.env.example`):
+
+   **PostgreSQL (Production):**
+   ```
+   DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+   ```
+
+   **Examples:**
+   - Local PostgreSQL: `DATABASE_URL="postgresql://postgres:password@localhost:5432/vieraskirja"`
+   - Vercel Postgres: `DATABASE_URL="postgres://default:xxxxx@xxxxx-pooler.us-east-1.postgres.vercel-storage.com:5432/verceldb?sslmode=require"`
+
+   **SQLite (Development only):**
    ```
    DATABASE_URL="file:./db.sqlite"
    ```
-   For PostgreSQL: `DATABASE_URL="postgresql://user:password@host:5432/db"`
+   Note: If using SQLite, change `provider` in `prisma/schema.prisma` to `"sqlite"`
 
 2. **Install Dependencies:**
    ```bash
@@ -119,6 +143,11 @@ To add new tRPC procedures:
 3. **Initialize Database:**
    ```bash
    npx prisma db push
+   ```
+
+   Or for production with migrations:
+   ```bash
+   npx prisma migrate deploy
    ```
 
 ### Available Scripts
@@ -254,8 +283,10 @@ const schema = z.object({
 - All API endpoints should be tRPC procedures
 - Client/Server component distinction is important in Next.js 15
 - The Prisma client is generated to `generated/prisma` (custom path)
-- Default database is SQLite for development, PostgreSQL recommended for production
-- All user input must be validated with Zod schemas
+- Database provider is PostgreSQL (can switch to SQLite for local dev by changing schema)
+- All user input must be validated with Zod schemas (both client and server side)
+- Form validation is already implemented in `src/app/_components/post.tsx`
+- Pagination with infinite scroll is already implemented
 - Use `'use client'` directive only when necessary (interactivity, hooks, browser APIs)
 
 ## Testing
