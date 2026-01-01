@@ -4,6 +4,12 @@ import { env } from "~/env";
 // Initialize Resend client (only if API key is provided)
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
+const logDebug = (...messages: unknown[]) => {
+  if (env.NODE_ENV !== "production") {
+    console.debug(...messages);
+  }
+};
+
 interface SendNewEntryNotificationParams {
   name: string;
   message: string;
@@ -21,8 +27,8 @@ export async function sendNewEntryNotification({
 }: SendNewEntryNotificationParams) {
   // Skip if email is not configured
   if (!resend || !env.EMAIL_FROM || !env.EMAIL_TO) {
-    console.log(
-      "Email notification skipped: Missing email configuration (RESEND_API_KEY, EMAIL_FROM, or EMAIL_TO)"
+    logDebug(
+      "Email notification skipped: Missing email configuration (RESEND_API_KEY, EMAIL_FROM, or EMAIL_TO)",
     );
     return { success: false, reason: "Email not configured" };
   }
@@ -138,7 +144,7 @@ This is an automated notification from your Vieraskirja guestbook.
       return { success: false, error };
     }
 
-    console.log("Email notification sent successfully:", data);
+    logDebug("Email notification sent successfully:", data);
     return { success: true, data };
   } catch (error) {
     console.error("Error sending email notification:", error);
