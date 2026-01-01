@@ -24,6 +24,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Set up environment variables
+        run: |
+          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
+
       - name: Generate Prisma Client
         run: npx prisma generate
 
@@ -53,6 +57,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Set up environment variables
+        run: |
+          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
+
       - name: Generate Prisma Client
         run: npx prisma generate
 
@@ -76,6 +84,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -97,7 +120,7 @@ jobs:
 
       - name: Set up test database
         run: |
-          echo "DATABASE_URL=\"file:./test.db\"" > .env
+          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
           npx prisma db push --skip-generate
 
       - name: Run E2E tests
@@ -114,6 +137,21 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -133,13 +171,11 @@ jobs:
 
       - name: Set up build environment
         run: |
-          echo "DATABASE_URL=\"file:./build.db\"" > .env
+          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
           npx prisma db push --skip-generate
 
       - name: Build application
         run: npm run build
-        env:
-          SKIP_ENV_VALIDATION: true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
