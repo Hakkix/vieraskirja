@@ -18,7 +18,7 @@
 - [x] Add user avatars or profile pictures
 - [x] Add email notification for new entries
 - [x] Implement rate limiting to prevent spam
-- [ ] Add moderation/admin panel
+- [x] Add moderation/admin panel
 
 ## UI/UX Improvements
 
