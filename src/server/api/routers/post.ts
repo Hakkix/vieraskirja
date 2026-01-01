@@ -1,7 +1,17 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createRateLimitMiddleware,
+  createTRPCRouter,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { sendNewEntryNotification } from "~/server/email";
+import { postCreationLimiter } from "~/server/ratelimit";
+
+// Create a rate-limited procedure for post creation
+const rateLimitedProcedure = publicProcedure.use(
+  createRateLimitMiddleware(postCreationLimiter),
+);
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
@@ -12,7 +22,7 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
-  create: publicProcedure
+  create: rateLimitedProcedure
     .input(
       z.object({
         name: z.string().min(1),
@@ -92,7 +102,7 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
-  update: publicProcedure
+  update: rateLimitedProcedure
     .input(
       z.object({
         id: z.number(),
@@ -110,7 +120,7 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  delete: publicProcedure
+  delete: rateLimitedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.post.delete({
