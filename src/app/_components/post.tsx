@@ -341,9 +341,9 @@ export function GuestbookEntries() {
   };
 
   return (
-    <div className="flex w-full max-w-2xl flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">Vieraskirjamerkinnät</h2>
+    <div className="flex w-full max-w-2xl flex-col gap-4 sm:gap-6">
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-2xl font-bold sm:text-3xl">Vieraskirjamerkinnät</h2>
         {allPosts.length > 0 && (
           <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white/70">
             {allPosts.length} {allPosts.length === 1 ? "merkintä" : "merkintää"}
@@ -396,9 +396,9 @@ export function GuestbookEntries() {
       </div>
 
       {allPosts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 py-16 px-4">
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 py-12 px-4 sm:py-16">
           <svg
-            className="mb-4 h-16 w-16 text-white/30"
+            className="mb-4 h-12 w-12 sm:h-16 sm:w-16 text-white/30"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -414,13 +414,13 @@ export function GuestbookEntries() {
           </svg>
           {searchQuery ? (
             <>
-              <p className="text-lg font-medium text-white/70">Ei hakutuloksia</p>
-              <p className="text-sm text-white/50">Kokeile hakea toisella hakusanalla</p>
+              <p className="text-base sm:text-lg font-medium text-white/70">Ei hakutuloksia</p>
+              <p className="text-sm text-white/50 text-center">Kokeile hakea toisella hakusanalla</p>
             </>
           ) : (
             <>
-              <p className="text-lg font-medium text-white/70">Ei vielä merkintöjä</p>
-              <p className="text-sm text-white/50">Ole ensimmäinen kirjoittamassa vieraskirjaan!</p>
+              <p className="text-base sm:text-lg font-medium text-white/70">Ei vielä merkintöjä</p>
+              <p className="text-sm text-white/50 text-center">Ole ensimmäinen kirjoittamassa vieraskirjaan!</p>
             </>
           )}
         </div>
@@ -432,14 +432,14 @@ export function GuestbookEntries() {
             return (
               <div
                 key={post.id}
-                className="group rounded-lg bg-white/10 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] animate-fade-in"
+                className="group rounded-lg bg-white/10 p-4 sm:p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] animate-fade-in"
                 style={{
                   animationDelay: `${index * 50}ms`,
                 }}
               >
                 {isEditing ? (
                   // Edit mode
-                  <div className="space-y-3">
+                  <div className="space-y-3 sm:space-y-4">
                     <div className="space-y-2">
                       <label htmlFor={`edit-name-${post.id}`} className="block text-sm font-medium text-white/90">
                         Nimi
@@ -484,18 +484,18 @@ export function GuestbookEntries() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 sm:flex-row">
                       <button
                         onClick={() => handleSaveEdit(post.id)}
                         disabled={updatePost.isPending}
-                        className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-400 hover:to-emerald-400 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-400 hover:to-emerald-400 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed sm:py-2"
                       >
                         {updatePost.isPending ? "Tallennetaan..." : "Tallenna"}
                       </button>
                       <button
                         onClick={handleCancelEdit}
                         disabled={updatePost.isPending}
-                        className="rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded-lg bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed sm:py-2"
                       >
                         Peruuta
                       </button>
@@ -504,9 +504,9 @@ export function GuestbookEntries() {
                 ) : (
                   // View mode
                   <>
-                    <div className="mb-3 flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-purple-400 to-pink-400 shadow-lg">
+                    <div className="mb-3 flex items-start justify-between gap-2 sm:gap-4">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="h-10 w-10 flex-shrink-0 sm:h-12 sm:w-12 overflow-hidden rounded-full bg-gradient-to-br from-purple-400 to-pink-400 shadow-lg">
                           {post.avatarSeed ? (
                             <img
                               src={getAvatarUrl(post.avatarSeed, "adventurer")}
@@ -514,26 +514,27 @@ export function GuestbookEntries() {
                               className="h-full w-full"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center font-bold text-white">
+                            <div className="flex h-full w-full items-center justify-center font-bold text-white text-sm sm:text-base">
                               {post.name.charAt(0).toUpperCase()}
                             </div>
                           )}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-white">{post.name}</h3>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-white text-sm sm:text-base truncate">{post.name}</h3>
                           <time className="text-xs text-white/50" dateTime={post.createdAt.toISOString()}>
                             {formatDate(post.createdAt)}
                           </time>
                         </div>
                       </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1.5 sm:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
                         <button
                           onClick={() => handleEdit(post)}
-                          className="rounded-lg bg-white/10 p-2 text-white/70 transition-all duration-200 hover:bg-white/20 hover:text-white hover:scale-110"
+                          className="rounded-lg bg-white/10 p-2 sm:p-2.5 text-white/70 transition-all duration-200 hover:bg-white/20 hover:text-white active:scale-95 sm:hover:scale-110"
                           title="Muokkaa"
+                          aria-label="Muokkaa viestiä"
                         >
                           <svg
-                            className="h-4 w-4"
+                            className="h-4 w-4 sm:h-5 sm:w-5"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -547,11 +548,12 @@ export function GuestbookEntries() {
                         <button
                           onClick={() => handleDelete(post.id)}
                           disabled={deletePost.isPending}
-                          className="rounded-lg bg-white/10 p-2 text-red-400/70 transition-all duration-200 hover:bg-red-500/20 hover:text-red-400 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="rounded-lg bg-white/10 p-2 sm:p-2.5 text-red-400/70 transition-all duration-200 hover:bg-red-500/20 hover:text-red-400 active:scale-95 sm:hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Poista"
+                          aria-label="Poista viesti"
                         >
                           <svg
-                            className="h-4 w-4"
+                            className="h-4 w-4 sm:h-5 sm:w-5"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -564,7 +566,7 @@ export function GuestbookEntries() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-white/90 leading-relaxed pl-[52px]">{post.message}</p>
+                    <p className="text-white/90 leading-relaxed pl-0 sm:pl-[52px] text-sm sm:text-base break-words">{post.message}</p>
                   </>
                 )}
               </div>
@@ -577,7 +579,7 @@ export function GuestbookEntries() {
         <button
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
-          className="rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-200 hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
+          className="w-full sm:w-auto rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-200 hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
         >
           {isFetchingNextPage ? (
             <span className="flex items-center justify-center gap-2">
