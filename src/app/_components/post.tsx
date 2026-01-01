@@ -241,6 +241,12 @@ export function GuestbookForm() {
 }
 
 export function GuestbookEntries() {
+  const utils = api.useUtils();
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editMessage, setEditMessage] = useState("");
+  const [editErrors, setEditErrors] = useState<ValidationErrors>({});
+
   const [data, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
     api.post.getAll.useSuspenseInfiniteQuery(
       { limit: 10 },
@@ -248,6 +254,64 @@ export function GuestbookEntries() {
     );
 
   const allPosts = data.pages.flatMap((page) => page.posts);
+
+  const deletePost = api.post.delete.useMutation({
+    onSuccess: async () => {
+      await utils.post.invalidate();
+    },
+  });
+
+  const updatePost = api.post.update.useMutation({
+    onSuccess: async () => {
+      await utils.post.invalidate();
+      setEditingId(null);
+      setEditErrors({});
+    },
+  });
+
+  const handleEdit = (post: { id: number; name: string; message: string }) => {
+    setEditingId(post.id);
+    setEditName(post.name);
+    setEditMessage(post.message);
+    setEditErrors({});
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditName("");
+    setEditMessage("");
+    setEditErrors({});
+  };
+
+  const handleSaveEdit = (id: number) => {
+    // Clear previous errors
+    setEditErrors({});
+
+    // Validate input
+    const result = guestbookSchema.safeParse({ name: editName, message: editMessage });
+
+    if (!result.success) {
+      // Extract validation errors
+      const errors: ValidationErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof ValidationErrors;
+        if (field) {
+          errors[field] = issue.message;
+        }
+      });
+      setEditErrors(errors);
+      return;
+    }
+
+    // Submit if validation passes
+    updatePost.mutate({ id, name: editName, message: editMessage });
+  };
+
+  const handleDelete = (id: number) => {
+    if (confirm("Haluatko varmasti poistaa tämän viestin?")) {
+      deletePost.mutate({ id });
+    }
+  };
 
   const formatDate = (date: Date) => {
     const now = new Date();
@@ -302,30 +366,140 @@ export function GuestbookEntries() {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {allPosts.map((post, index) => (
-            <div
-              key={post.id}
-              className="group rounded-lg bg-white/10 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] hover:scale-[1.01] animate-fade-in"
-              style={{
-                animationDelay: `${index * 50}ms`,
-              }}
-            >
-              <div className="mb-3 flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white shadow-lg">
-                    {post.name.charAt(0).toUpperCase()}
+          {allPosts.map((post, index) => {
+            const isEditing = editingId === post.id;
+
+            return (
+              <div
+                key={post.id}
+                className="group rounded-lg bg-white/10 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] animate-fade-in"
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                }}
+              >
+                {isEditing ? (
+                  // Edit mode
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <label htmlFor={`edit-name-${post.id}`} className="block text-sm font-medium text-white/90">
+                        Nimi
+                      </label>
+                      <input
+                        id={`edit-name-${post.id}`}
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className={`w-full rounded-lg bg-white/15 px-4 py-2 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
+                          editErrors.name
+                            ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
+                            : "focus:ring-white/30"
+                        }`}
+                      />
+                      {editErrors.name && (
+                        <p className="text-sm text-red-400">{editErrors.name}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor={`edit-message-${post.id}`} className="block text-sm font-medium text-white/90">
+                        Viesti
+                      </label>
+                      <textarea
+                        id={`edit-message-${post.id}`}
+                        value={editMessage}
+                        onChange={(e) => setEditMessage(e.target.value)}
+                        maxLength={500}
+                        rows={3}
+                        className={`w-full resize-none rounded-lg bg-white/15 px-4 py-2 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
+                          editErrors.message
+                            ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
+                            : "focus:ring-white/30"
+                        }`}
+                      />
+                      {editErrors.message && (
+                        <p className="text-sm text-red-400">{editErrors.message}</p>
+                      )}
+                      <div className="text-sm text-white/60">
+                        {editMessage.length} / 500 merkkiä
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleSaveEdit(post.id)}
+                        disabled={updatePost.isPending}
+                        className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-400 hover:to-emerald-400 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {updatePost.isPending ? "Tallennetaan..." : "Tallenna"}
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        disabled={updatePost.isPending}
+                        className="rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Peruuta
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-white">{post.name}</h3>
-                    <time className="text-xs text-white/50" dateTime={post.createdAt.toISOString()}>
-                      {formatDate(post.createdAt)}
-                    </time>
-                  </div>
-                </div>
+                ) : (
+                  // View mode
+                  <>
+                    <div className="mb-3 flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white shadow-lg">
+                          {post.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-white">{post.name}</h3>
+                          <time className="text-xs text-white/50" dateTime={post.createdAt.toISOString()}>
+                            {formatDate(post.createdAt)}
+                          </time>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleEdit(post)}
+                          className="rounded-lg bg-white/10 p-2 text-white/70 transition-all duration-200 hover:bg-white/20 hover:text-white hover:scale-110"
+                          title="Muokkaa"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(post.id)}
+                          disabled={deletePost.isPending}
+                          className="rounded-lg bg-white/10 p-2 text-red-400/70 transition-all duration-200 hover:bg-red-500/20 hover:text-red-400 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Poista"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-white/90 leading-relaxed pl-[52px]">{post.message}</p>
+                  </>
+                )}
               </div>
-              <p className="text-white/90 leading-relaxed pl-[52px]">{post.message}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

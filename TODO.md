@@ -7,13 +7,13 @@
 
 ## High Priority
 
-- [ ] Add form validation and error handling on the client side
-- [ ] Set up production database (PostgreSQL)
-- [ ] Display all guestbook entries with pagination UI
+- [x] Add form validation and error handling on the client side
+- [x] Set up production database (PostgreSQL)
+- [x] Display all guestbook entries with pagination UI
 
 ## Features
 
-- [ ] Add ability to edit/delete posts
+- [x] Add ability to edit/delete posts
 - [ ] Implement search/filter functionality
 - [ ] Add user avatars or profile pictures
 - [ ] Add email notification for new entries
