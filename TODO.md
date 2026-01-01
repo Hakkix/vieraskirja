@@ -26,7 +26,7 @@
 - [x] Improve responsive design for mobile devices
 - [x] Add animations for new post submissions
 - [x] Create custom 404 and error pages
-- [ ] Add dark mode toggle
+- [x] Add dark mode toggle
 
 ## Technical Debt
 
