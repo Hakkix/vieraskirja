@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { TRPCClientErrorLike } from "@trpc/client";
 import { z } from "zod";
 
@@ -27,6 +27,7 @@ export function GuestbookForm() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
+  const [buttonSuccess, setButtonSuccess] = useState(false);
 
   const createPost = api.post.create.useMutation({
     onSuccess: async () => {
@@ -34,9 +35,11 @@ export function GuestbookForm() {
       setName("");
       setMessage("");
       setShowSuccess(true);
+      setButtonSuccess(true);
       setValidationErrors({});
       setServerError(null);
       setTimeout(() => setShowSuccess(false), 3000);
+      setTimeout(() => setButtonSuccess(false), 400);
     },
     onError: (error: TRPCClientErrorLike<AppRouter>) => {
       // Handle server-side errors
@@ -187,7 +190,7 @@ export function GuestbookForm() {
 
         <button
           type="submit"
-          className="rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 px-10 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-200 hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
+          className={`rounded-lg bg-gradient-to-r from-teal-500 to-cyan-500 px-10 py-3 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all duration-200 hover:from-teal-400 hover:to-cyan-400 hover:shadow-teal-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none ${buttonSuccess ? 'animate-button-success' : ''}`}
           disabled={createPost.isPending}
         >
           {createPost.isPending ? (
@@ -202,7 +205,7 @@ export function GuestbookForm() {
       </form>
 
       {showSuccess && (
-        <div className="animate-fade-in rounded-lg bg-green-500/20 border border-green-500/30 px-4 py-3 text-green-100">
+        <div className="animate-success-celebration rounded-lg bg-green-500/20 border border-green-500/30 px-4 py-3 text-green-100">
           <p className="flex items-center gap-2">
             <svg
               className="h-5 w-5"
@@ -221,7 +224,7 @@ export function GuestbookForm() {
       )}
 
       {serverError && (
-        <div className="animate-fade-in rounded-lg bg-red-500/20 border border-red-500/30 px-4 py-3 text-red-100">
+        <div className="animate-shake rounded-lg bg-red-500/20 border border-red-500/30 px-4 py-3 text-red-100">
           <p className="flex items-center gap-2">
             <svg
               className="h-5 w-5"
@@ -249,6 +252,7 @@ export function GuestbookEntries() {
   const [editMessage, setEditMessage] = useState("");
   const [editErrors, setEditErrors] = useState<ValidationErrors>({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [newlyCreatedId, setNewlyCreatedId] = useState<number | null>(null);
 
   const [data, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
     api.post.getAll.useSuspenseInfiniteQuery(
@@ -257,6 +261,23 @@ export function GuestbookEntries() {
     );
 
   const allPosts = data.pages.flatMap((page) => page.posts);
+
+  // Track previous first post to detect newly added posts
+  const prevFirstPostIdRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const firstPost = allPosts[0];
+    if (firstPost && prevFirstPostIdRef.current !== null && firstPost.id !== prevFirstPostIdRef.current) {
+      // New post detected at the top
+      setNewlyCreatedId(firstPost.id);
+      // Clear the animation flag after animation completes
+      const timer = setTimeout(() => setNewlyCreatedId(null), 600);
+      return () => clearTimeout(timer);
+    }
+    if (firstPost) {
+      prevFirstPostIdRef.current = firstPost.id;
+    }
+  }, [allPosts]);
 
   const deletePost = api.post.delete.useMutation({
     onSuccess: async () => {
@@ -428,13 +449,16 @@ export function GuestbookEntries() {
         <div className="flex flex-col gap-3">
           {allPosts.map((post, index) => {
             const isEditing = editingId === post.id;
+            const isNewlyCreated = post.id === newlyCreatedId;
 
             return (
               <div
                 key={post.id}
-                className="group rounded-lg bg-white/10 p-4 sm:p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] animate-fade-in"
+                className={`group rounded-lg bg-white/10 p-4 sm:p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] ${
+                  isNewlyCreated ? 'animate-slide-in-top' : 'animate-fade-in'
+                }`}
                 style={{
-                  animationDelay: `${index * 50}ms`,
+                  animationDelay: isNewlyCreated ? '0ms' : `${index * 50}ms`,
                 }}
               >
                 {isEditing ? (
