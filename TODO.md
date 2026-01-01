@@ -15,7 +15,7 @@
 
 - [x] Add ability to edit/delete posts
 - [x] Implement search/filter functionality
-- [ ] Add user avatars or profile pictures
+- [x] Add user avatars or profile pictures
 - [ ] Add email notification for new entries
 - [ ] Implement rate limiting to prevent spam
 - [ ] Add moderation/admin panel

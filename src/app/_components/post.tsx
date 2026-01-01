@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { api } from "~/trpc/react";
 import type { AppRouter } from "~/server/api/root";
+import { generateRandomSeed, getAvatarUrl } from "~/utils/avatar";
 
 // Client-side validation schema matching server schema
 const guestbookSchema = z.object({
@@ -72,7 +73,8 @@ export function GuestbookForm() {
     }
 
     // Submit if validation passes
-    createPost.mutate({ name, message });
+    const avatarSeed = generateRandomSeed();
+    createPost.mutate({ name, message, avatarSeed });
   };
 
   // Clear field error on input change
@@ -504,8 +506,18 @@ export function GuestbookEntries() {
                   <>
                     <div className="mb-3 flex items-start justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white shadow-lg">
-                          {post.name.charAt(0).toUpperCase()}
+                        <div className="h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-purple-400 to-pink-400 shadow-lg">
+                          {post.avatarSeed ? (
+                            <img
+                              src={getAvatarUrl(post.avatarSeed, "adventurer")}
+                              alt={`${post.name}'s avatar`}
+                              className="h-full w-full"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center font-bold text-white">
+                              {post.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <h3 className="font-semibold text-white">{post.name}</h3>

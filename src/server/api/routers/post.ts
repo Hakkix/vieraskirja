@@ -16,6 +16,7 @@ export const postRouter = createTRPCRouter({
       z.object({
         name: z.string().min(1),
         message: z.string().min(1).max(500),
+        avatarSeed: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -23,6 +24,7 @@ export const postRouter = createTRPCRouter({
         data: {
           name: input.name,
           message: input.message,
+          avatarSeed: input.avatarSeed ?? "",
         },
       });
     }),
