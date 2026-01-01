@@ -23,7 +23,7 @@
 ## UI/UX Improvements
 
 - [x] Add loading states and skeletons
-- [ ] Improve responsive design for mobile devices
+- [x] Improve responsive design for mobile devices
 - [ ] Add animations for new post submissions
 - [ ] Create custom 404 and error pages
 - [ ] Add dark mode toggle
