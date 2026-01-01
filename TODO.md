@@ -31,7 +31,7 @@
 ## Technical Debt
 
 - [x] Add unit tests for tRPC routers
-- [ ] Add E2E tests with Playwright or Cypress
+- [x] Add E2E tests with Playwright or Cypress
 - [ ] Set up CI/CD pipeline
 - [ ] Add error monitoring (Sentry)
 - [ ] Implement proper logging
