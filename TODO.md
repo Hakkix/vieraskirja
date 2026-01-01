@@ -32,7 +32,7 @@
 
 - [x] Add unit tests for tRPC routers
 - [x] Add E2E tests with Playwright or Cypress
-- [ ] Set up CI/CD pipeline
+- [x] Set up CI/CD pipeline
 - [ ] Add error monitoring (Sentry)
 - [ ] Implement proper logging
 - [ ] Add API rate limiting
