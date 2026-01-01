@@ -25,7 +25,7 @@
 - [x] Add loading states and skeletons
 - [x] Improve responsive design for mobile devices
 - [x] Add animations for new post submissions
-- [ ] Create custom 404 and error pages
+- [x] Create custom 404 and error pages
 - [ ] Add dark mode toggle
 
 ## Technical Debt
