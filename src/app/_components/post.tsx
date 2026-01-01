@@ -532,7 +532,9 @@ export function GuestbookEntries() {
                       <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className="h-10 w-10 flex-shrink-0 sm:h-12 sm:w-12 overflow-hidden rounded-full bg-gradient-to-br from-purple-400 to-pink-400 shadow-lg">
                           {post.avatarSeed ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
+                              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                               src={getAvatarUrl(post.avatarSeed, "adventurer")}
                               alt={`${post.name}'s avatar`}
                               className="h-full w-full"
