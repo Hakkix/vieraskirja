@@ -162,6 +162,7 @@ function AdminPanelContent({
                   <div className="flex-1 min-w-0">
                     <div className="mb-2 flex items-center gap-3">
                       {post.avatarSeed && (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.avatarSeed}`}
                           alt={`${post.name}'s avatar`}

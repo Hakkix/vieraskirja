@@ -6,6 +6,12 @@ export default defineConfig({
     environment: "happy-dom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/e2e/**", // Exclude Playwright e2e tests
+      "**/.{idea,git,cache,output,temp}/**",
+    ],
   },
   resolve: {
     alias: {

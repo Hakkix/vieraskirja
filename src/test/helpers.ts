@@ -16,8 +16,8 @@ export const createMockDb = (): DeepMockProxy<PrismaClient> => {
 export const createTestCaller = (db: DeepMockProxy<PrismaClient>) => {
   const createCaller = createCallerFactory(appRouter);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return createCaller({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     db,
     clientIp: "127.0.0.1",
     headers: new Headers(),
