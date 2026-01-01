@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { api } from "~/trpc/react";
+import { StatsSkeleton, AdminPostListSkeleton } from "~/app/_components/skeleton";
 
 type ModerationStatus = "PENDING" | "APPROVED" | "REJECTED";
 
@@ -63,7 +64,7 @@ function AdminPanelContent({
   selectedStatus: ModerationStatus | "ALL";
   setSelectedStatus: (status: ModerationStatus | "ALL") => void;
 }) {
-  const { data: stats } = api.post.getModerationStats.useQuery();
+  const { data: stats, isLoading: statsLoading } = api.post.getModerationStats.useQuery();
   const { data, fetchNextPage, hasNextPage, isLoading } = api.post.getAllForModeration.useInfiniteQuery(
     {
       limit: 10,
@@ -102,7 +103,9 @@ function AdminPanelContent({
         </div>
 
         {/* Stats */}
-        {stats && (
+        {statsLoading ? (
+          <StatsSkeleton />
+        ) : stats ? (
           <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
               <div className="text-3xl font-bold">{stats.pending}</div>
@@ -121,7 +124,7 @@ function AdminPanelContent({
               <div className="text-sm text-white/70">Total</div>
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Filter */}
         <div className="mb-6 flex gap-2">
@@ -142,7 +145,7 @@ function AdminPanelContent({
 
         {/* Posts */}
         {isLoading ? (
-          <div className="text-center">Loading...</div>
+          <AdminPostListSkeleton />
         ) : posts.length === 0 ? (
           <div className="rounded-lg bg-white/10 p-8 text-center backdrop-blur-sm">
             No posts to moderate

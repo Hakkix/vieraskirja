@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { GuestbookForm, GuestbookEntries } from "~/app/_components/post";
+import { PostListSkeleton } from "~/app/_components/skeleton";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
@@ -21,7 +23,9 @@ export default async function Home() {
 
           <div className="my-4 h-px w-full max-w-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-          <GuestbookEntries />
+          <Suspense fallback={<PostListSkeleton />}>
+            <GuestbookEntries />
+          </Suspense>
         </div>
       </main>
     </HydrateClient>
