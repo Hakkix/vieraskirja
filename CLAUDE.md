@@ -12,6 +12,7 @@
 - **Production Database** - PostgreSQL support with complete migration setup
 - **Modern UI/UX** - Gradient backgrounds, smooth animations, responsive design, and Finnish language support
 - **Type Safety** - End-to-end type safety with tRPC and TypeScript
+- **Email Notifications** - Automatic email notifications when new guestbook entries are created (optional, uses Resend)
 
 ## Tech Stack (T3 Stack)
 
@@ -22,6 +23,7 @@
 - **Database & ORM:** Prisma 6.6.0
 - **Validation:** Zod 3.24.2
 - **State Management:** TanStack React Query 5.69.0
+- **Email:** Resend (Optional, for email notifications)
 
 ## Project Architecture
 
@@ -42,7 +44,8 @@ vieraskirja/
 │   │   │   │   └── post.ts    # Post router (CRUD operations)
 │   │   │   ├── root.ts        # Root router
 │   │   │   └── trpc.ts        # tRPC configuration
-│   │   └── db.ts              # Prisma client singleton
+│   │   ├── db.ts              # Prisma client singleton
+│   │   └── email.ts           # Email notification utilities
 │   ├── trpc/                   # tRPC client configuration
 │   │   ├── query-client.ts
 │   │   ├── react.tsx
@@ -134,6 +137,23 @@ To add new tRPC procedures:
    DATABASE_URL="file:./db.sqlite"
    ```
    Note: If using SQLite, change `provider` in `prisma/schema.prisma` to `"sqlite"`
+
+   **Email Notifications (Optional):**
+
+   To enable email notifications for new guestbook entries, add these variables:
+   ```
+   RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
+   EMAIL_FROM="onboarding@resend.dev"
+   EMAIL_TO="your-email@example.com"
+   ```
+
+   **Getting started with Resend:**
+   1. Sign up at [resend.com](https://resend.com)
+   2. Get your API key from [resend.com/api-keys](https://resend.com/api-keys)
+   3. Verify your domain or use the default `onboarding@resend.dev` for testing
+   4. Set `EMAIL_TO` to the email address where you want to receive notifications
+
+   **Note:** Email notifications are completely optional. If these variables are not set, the app will work normally but won't send notifications.
 
 2. **Install Dependencies:**
    ```bash
@@ -266,12 +286,40 @@ const schema = z.object({
 2. Build: `docker build -t vieraskirja .`
 3. Run: `docker run -p 3000:3000 -e DATABASE_URL="..." vieraskirja`
 
+### Email Notifications
+
+The application supports optional email notifications when new guestbook entries are created. This feature uses [Resend](https://resend.com) for sending emails.
+
+**How it works:**
+- When a user submits a new guestbook entry, an email notification is automatically sent to the configured email address
+- The notification includes the author's name, message content, and timestamp
+- Emails are sent asynchronously (fire-and-forget) so they don't block the user's response
+- If email configuration is missing, the app logs a message and continues working normally
+
+**Configuration:**
+Set these environment variables in your `.env` file:
+```
+RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
+EMAIL_FROM="onboarding@resend.dev"
+EMAIL_TO="your-email@example.com"
+```
+
+**Implementation details:**
+- Email logic is in `src/server/email.ts`
+- The `sendNewEntryNotification()` function is called from the `create` mutation in `src/server/api/routers/post.ts`
+- HTML and plain text email templates are included
+- All user input is escaped to prevent XSS attacks
+
+**For Vercel deployment:**
+Add the same environment variables in your Vercel project settings.
+
 ## Key Files Reference
 
 - `src/server/api/routers/post.ts` - Backend API logic
 - `src/app/page.tsx` - Home page
 - `src/app/_components/post.tsx` - Post component
 - `src/server/db.ts` - Database client
+- `src/server/email.ts` - Email notification utilities
 - `prisma/schema.prisma` - Database schema
 - `.env` - Environment variables
 - `package.json` - Dependencies and scripts
@@ -288,6 +336,7 @@ const schema = z.object({
 - Form validation is already implemented in `src/app/_components/post.tsx`
 - Pagination with infinite scroll is already implemented
 - Use `'use client'` directive only when necessary (interactivity, hooks, browser APIs)
+- Email notifications are optional and use Resend (configured via environment variables)
 
 ## Testing
 
