@@ -22,7 +22,7 @@
 
 ## UI/UX Improvements
 
-- [ ] Add loading states and skeletons
+- [x] Add loading states and skeletons
 - [ ] Improve responsive design for mobile devices
 - [ ] Add animations for new post submissions
 - [ ] Create custom 404 and error pages
