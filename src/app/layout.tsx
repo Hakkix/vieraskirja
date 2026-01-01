@@ -4,6 +4,8 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { ThemeProvider } from "~/components/theme-provider";
+import { ThemeToggle } from "~/components/theme-toggle";
 
 export const metadata: Metadata = {
   title: "Vieraskirja | Sign Our Guestbook",
@@ -20,9 +22,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <ThemeProvider>
+          <TRPCReactProvider>
+            <ThemeToggle />
+            {children}
+          </TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

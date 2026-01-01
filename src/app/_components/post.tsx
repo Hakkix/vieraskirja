@@ -103,7 +103,7 @@ export function GuestbookForm() {
         noValidate
       >
         <div className="space-y-2">
-          <label htmlFor="name" className="block text-sm font-medium text-white/90">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-white/90">
             Nimi
           </label>
           <input
@@ -112,10 +112,10 @@ export function GuestbookForm() {
             placeholder="Nimesi"
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
-            className={`w-full rounded-lg bg-white/15 px-4 py-3 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
+            className={`w-full rounded-lg bg-white border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-500 dark:bg-white/15 dark:border-transparent dark:text-white dark:placeholder:text-white/70 transition-all duration-200 focus:bg-white dark:focus:bg-white/20 focus:outline-none focus:ring-2 ${
               validationErrors.name
                 ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
-                : "focus:ring-white/30"
+                : "focus:ring-indigo-500 dark:focus:ring-white/30"
             }`}
             disabled={createPost.isPending}
             aria-label="Nimi"
@@ -141,7 +141,7 @@ export function GuestbookForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="message" className="block text-sm font-medium text-white/90">
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-white/90">
             Viesti
           </label>
           <textarea
@@ -151,10 +151,10 @@ export function GuestbookForm() {
             onChange={(e) => handleMessageChange(e.target.value)}
             maxLength={maxCharacters}
             rows={4}
-            className={`w-full resize-none rounded-lg bg-white/15 px-4 py-3 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
+            className={`w-full resize-none rounded-lg bg-white border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-500 dark:bg-white/15 dark:border-transparent dark:text-white dark:placeholder:text-white/70 transition-all duration-200 focus:bg-white dark:focus:bg-white/20 focus:outline-none focus:ring-2 ${
               validationErrors.message
                 ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
-                : "focus:ring-white/30"
+                : "focus:ring-indigo-500 dark:focus:ring-white/30"
             }`}
             disabled={createPost.isPending}
             aria-label="Viesti"
@@ -180,7 +180,7 @@ export function GuestbookForm() {
           <div className="flex items-center justify-between text-sm">
             <span
               className={`transition-colors ${
-                characterWarning ? "text-yellow-400" : "text-white/60"
+                characterWarning ? "text-yellow-600 dark:text-yellow-400" : "text-gray-600 dark:text-white/60"
               }`}
             >
               {characterCount} / {maxCharacters} merkkiä
@@ -205,7 +205,7 @@ export function GuestbookForm() {
       </form>
 
       {showSuccess && (
-        <div className="animate-success-celebration rounded-lg bg-green-500/20 border border-green-500/30 px-4 py-3 text-green-100">
+        <div className="animate-success-celebration rounded-lg bg-green-100 border border-green-300 px-4 py-3 text-green-800 dark:bg-green-500/20 dark:border-green-500/30 dark:text-green-100">
           <p className="flex items-center gap-2">
             <svg
               className="h-5 w-5"
@@ -224,7 +224,7 @@ export function GuestbookForm() {
       )}
 
       {serverError && (
-        <div className="animate-shake rounded-lg bg-red-500/20 border border-red-500/30 px-4 py-3 text-red-100">
+        <div className="animate-shake rounded-lg bg-red-100 border border-red-300 px-4 py-3 text-red-800 dark:bg-red-500/20 dark:border-red-500/30 dark:text-red-100">
           <p className="flex items-center gap-2">
             <svg
               className="h-5 w-5"
@@ -364,9 +364,9 @@ export function GuestbookEntries() {
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4 sm:gap-6">
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold sm:text-3xl">Vieraskirjamerkinnät</h2>
+        <h2 className="text-2xl font-bold sm:text-3xl text-gray-900 dark:text-white">Vieraskirjamerkinnät</h2>
         {allPosts.length > 0 && (
-          <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white/70">
+          <span className="rounded-full bg-gray-200 px-3 py-1 text-sm font-medium text-gray-700 dark:bg-white/10 dark:text-white/70">
             {allPosts.length} {allPosts.length === 1 ? "merkintä" : "merkintää"}
           </span>
         )}
@@ -376,7 +376,7 @@ export function GuestbookEntries() {
       <div className="relative">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
           <svg
-            className="h-5 w-5 text-white/50"
+            className="h-5 w-5 text-gray-400 dark:text-white/50"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -392,13 +392,13 @@ export function GuestbookEntries() {
           placeholder="Etsi nimestä tai viestistä..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full rounded-lg bg-white/10 py-3 pl-11 pr-4 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30"
+          className="w-full rounded-lg bg-white border border-gray-300 py-3 pl-11 pr-4 text-gray-900 placeholder:text-gray-500 dark:bg-white/10 dark:border-transparent dark:text-white dark:placeholder:text-white/50 transition-all duration-200 focus:bg-white dark:focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white/30"
           aria-label="Etsi vieraskirjamerkintöjä"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery("")}
-            className="absolute inset-y-0 right-0 flex items-center pr-4 text-white/50 hover:text-white transition-colors"
+            className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 hover:text-gray-700 dark:text-white/50 dark:hover:text-white transition-colors"
             aria-label="Tyhjennä haku"
           >
             <svg
@@ -417,9 +417,9 @@ export function GuestbookEntries() {
       </div>
 
       {allPosts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 py-12 px-4 sm:py-16">
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-12 px-4 sm:py-16 dark:border-white/20 dark:bg-white/5">
           <svg
-            className="mb-4 h-12 w-12 sm:h-16 sm:w-16 text-white/30"
+            className="mb-4 h-12 w-12 sm:h-16 sm:w-16 text-gray-400 dark:text-white/30"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -435,13 +435,13 @@ export function GuestbookEntries() {
           </svg>
           {searchQuery ? (
             <>
-              <p className="text-base sm:text-lg font-medium text-white/70">Ei hakutuloksia</p>
-              <p className="text-sm text-white/50 text-center">Kokeile hakea toisella hakusanalla</p>
+              <p className="text-base sm:text-lg font-medium text-gray-700 dark:text-white/70">Ei hakutuloksia</p>
+              <p className="text-sm text-gray-600 dark:text-white/50 text-center">Kokeile hakea toisella hakusanalla</p>
             </>
           ) : (
             <>
-              <p className="text-base sm:text-lg font-medium text-white/70">Ei vielä merkintöjä</p>
-              <p className="text-sm text-white/50 text-center">Ole ensimmäinen kirjoittamassa vieraskirjaan!</p>
+              <p className="text-base sm:text-lg font-medium text-gray-700 dark:text-white/70">Ei vielä merkintöjä</p>
+              <p className="text-sm text-gray-600 dark:text-white/50 text-center">Ole ensimmäinen kirjoittamassa vieraskirjaan!</p>
             </>
           )}
         </div>
@@ -454,7 +454,7 @@ export function GuestbookEntries() {
             return (
               <div
                 key={post.id}
-                className={`group rounded-lg bg-white/10 p-4 sm:p-5 backdrop-blur-sm transition-all duration-200 hover:bg-white/[0.15] ${
+                className={`group rounded-lg bg-white border border-gray-200 p-4 sm:p-5 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-white/10 dark:border-transparent dark:backdrop-blur-sm dark:hover:bg-white/[0.15] ${
                   isNewlyCreated ? 'animate-slide-in-top' : 'animate-fade-in'
                 }`}
                 style={{
@@ -465,7 +465,7 @@ export function GuestbookEntries() {
                   // Edit mode
                   <div className="space-y-3 sm:space-y-4">
                     <div className="space-y-2">
-                      <label htmlFor={`edit-name-${post.id}`} className="block text-sm font-medium text-white/90">
+                      <label htmlFor={`edit-name-${post.id}`} className="block text-sm font-medium text-gray-700 dark:text-white/90">
                         Nimi
                       </label>
                       <input
@@ -473,19 +473,19 @@ export function GuestbookEntries() {
                         type="text"
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className={`w-full rounded-lg bg-white/15 px-4 py-2 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
+                        className={`w-full rounded-lg bg-gray-50 border border-gray-300 px-4 py-2 text-gray-900 placeholder:text-gray-500 dark:bg-white/15 dark:border-transparent dark:text-white dark:placeholder:text-white/70 transition-all duration-200 focus:bg-white dark:focus:bg-white/20 focus:outline-none focus:ring-2 ${
                           editErrors.name
                             ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
-                            : "focus:ring-white/30"
+                            : "focus:ring-indigo-500 dark:focus:ring-white/30"
                         }`}
                       />
                       {editErrors.name && (
-                        <p className="text-sm text-red-400">{editErrors.name}</p>
+                        <p className="text-sm text-red-600 dark:text-red-400">{editErrors.name}</p>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor={`edit-message-${post.id}`} className="block text-sm font-medium text-white/90">
+                      <label htmlFor={`edit-message-${post.id}`} className="block text-sm font-medium text-gray-700 dark:text-white/90">
                         Viesti
                       </label>
                       <textarea
@@ -494,16 +494,16 @@ export function GuestbookEntries() {
                         onChange={(e) => setEditMessage(e.target.value)}
                         maxLength={500}
                         rows={3}
-                        className={`w-full resize-none rounded-lg bg-white/15 px-4 py-2 text-white placeholder:text-white/70 transition-all duration-200 focus:bg-white/20 focus:outline-none focus:ring-2 ${
+                        className={`w-full resize-none rounded-lg bg-gray-50 border border-gray-300 px-4 py-2 text-gray-900 placeholder:text-gray-500 dark:bg-white/15 dark:border-transparent dark:text-white dark:placeholder:text-white/70 transition-all duration-200 focus:bg-white dark:focus:bg-white/20 focus:outline-none focus:ring-2 ${
                           editErrors.message
                             ? "ring-2 ring-red-500/50 focus:ring-red-500/70"
-                            : "focus:ring-white/30"
+                            : "focus:ring-indigo-500 dark:focus:ring-white/30"
                         }`}
                       />
                       {editErrors.message && (
-                        <p className="text-sm text-red-400">{editErrors.message}</p>
+                        <p className="text-sm text-red-600 dark:text-red-400">{editErrors.message}</p>
                       )}
-                      <div className="text-sm text-white/60">
+                      <div className="text-sm text-gray-600 dark:text-white/60">
                         {editMessage.length} / 500 merkkiä
                       </div>
                     </div>
@@ -512,14 +512,14 @@ export function GuestbookEntries() {
                       <button
                         onClick={() => handleSaveEdit(post.id)}
                         disabled={updatePost.isPending}
-                        className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-400 hover:to-emerald-400 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed sm:py-2"
+                        className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-400 hover:to-emerald-400 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed dark:from-green-500 dark:to-emerald-500 sm:py-2"
                       >
                         {updatePost.isPending ? "Tallennetaan..." : "Tallenna"}
                       </button>
                       <button
                         onClick={handleCancelEdit}
                         disabled={updatePost.isPending}
-                        className="rounded-lg bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-white/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed sm:py-2"
+                        className="rounded-lg bg-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white/10 dark:text-white dark:hover:bg-white/20 sm:py-2"
                       >
                         Peruuta
                       </button>
@@ -544,8 +544,8 @@ export function GuestbookEntries() {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-semibold text-white text-sm sm:text-base truncate">{post.name}</h3>
-                          <time className="text-xs text-white/50" dateTime={post.createdAt.toISOString()}>
+                          <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">{post.name}</h3>
+                          <time className="text-xs text-gray-500 dark:text-white/50" dateTime={post.createdAt.toISOString()}>
                             {formatDate(post.createdAt)}
                           </time>
                         </div>
@@ -553,7 +553,7 @@ export function GuestbookEntries() {
                       <div className="flex gap-1.5 sm:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
                         <button
                           onClick={() => handleEdit(post)}
-                          className="rounded-lg bg-white/10 p-2 sm:p-2.5 text-white/70 transition-all duration-200 hover:bg-white/20 hover:text-white active:scale-95 sm:hover:scale-110"
+                          className="rounded-lg bg-gray-100 p-2 sm:p-2.5 text-gray-600 transition-all duration-200 hover:bg-gray-200 hover:text-gray-800 active:scale-95 sm:hover:scale-110 dark:bg-white/10 dark:text-white/70 dark:hover:bg-white/20 dark:hover:text-white"
                           title="Muokkaa"
                           aria-label="Muokkaa viestiä"
                         >
@@ -572,7 +572,7 @@ export function GuestbookEntries() {
                         <button
                           onClick={() => handleDelete(post.id)}
                           disabled={deletePost.isPending}
-                          className="rounded-lg bg-white/10 p-2 sm:p-2.5 text-red-400/70 transition-all duration-200 hover:bg-red-500/20 hover:text-red-400 active:scale-95 sm:hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="rounded-lg bg-gray-100 p-2 sm:p-2.5 text-red-600 transition-all duration-200 hover:bg-red-100 hover:text-red-700 active:scale-95 sm:hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white/10 dark:text-red-400/70 dark:hover:bg-red-500/20 dark:hover:text-red-400"
                           title="Poista"
                           aria-label="Poista viesti"
                         >
@@ -590,7 +590,7 @@ export function GuestbookEntries() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-white/90 leading-relaxed pl-0 sm:pl-[52px] text-sm sm:text-base break-words">{post.message}</p>
+                    <p className="text-gray-800 dark:text-white/90 leading-relaxed pl-0 sm:pl-[52px] text-sm sm:text-base break-words">{post.message}</p>
                   </>
                 )}
               </div>
