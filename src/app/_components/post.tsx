@@ -246,10 +246,11 @@ export function GuestbookEntries() {
   const [editName, setEditName] = useState("");
   const [editMessage, setEditMessage] = useState("");
   const [editErrors, setEditErrors] = useState<ValidationErrors>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [data, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
     api.post.getAll.useSuspenseInfiniteQuery(
-      { limit: 10 },
+      { limit: 10, search: searchQuery || undefined },
       { getNextPageParam: (lastPage) => lastPage.nextCursor },
     );
 
@@ -348,6 +349,50 @@ export function GuestbookEntries() {
         )}
       </div>
 
+      {/* Search input */}
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+          <svg
+            className="h-5 w-5 text-white/50"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input
+          type="text"
+          placeholder="Etsi nimestä tai viestistä..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full rounded-lg bg-white/10 py-3 pl-11 pr-4 text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30"
+          aria-label="Etsi vieraskirjamerkintöjä"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute inset-y-0 right-0 flex items-center pr-4 text-white/50 hover:text-white transition-colors"
+            aria-label="Tyhjennä haku"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        )}
+      </div>
+
       {allPosts.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 py-16 px-4">
           <svg
@@ -359,10 +404,23 @@ export function GuestbookEntries() {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+            {searchQuery ? (
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            ) : (
+              <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+            )}
           </svg>
-          <p className="text-lg font-medium text-white/70">Ei vielä merkintöjä</p>
-          <p className="text-sm text-white/50">Ole ensimmäinen kirjoittamassa vieraskirjaan!</p>
+          {searchQuery ? (
+            <>
+              <p className="text-lg font-medium text-white/70">Ei hakutuloksia</p>
+              <p className="text-sm text-white/50">Kokeile hakea toisella hakusanalla</p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-medium text-white/70">Ei vielä merkintöjä</p>
+              <p className="text-sm text-white/50">Ole ensimmäinen kirjoittamassa vieraskirjaan!</p>
+            </>
+          )}
         </div>
       ) : (
         <div className="flex flex-col gap-3">

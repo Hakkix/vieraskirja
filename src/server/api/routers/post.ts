@@ -40,14 +40,28 @@ export const postRouter = createTRPCRouter({
       z.object({
         limit: z.number().min(1).max(100).default(10),
         cursor: z.number().optional(),
+        search: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { limit, cursor } = input;
+      const { limit, cursor, search } = input;
+
+      // Build where clause
+      const where = {
+        ...(cursor ? { id: { lt: cursor } } : {}),
+        ...(search
+          ? {
+              OR: [
+                { name: { contains: search, mode: "insensitive" as const } },
+                { message: { contains: search, mode: "insensitive" as const } },
+              ],
+            }
+          : {}),
+      };
 
       const posts = await ctx.db.post.findMany({
         take: limit + 1,
-        where: cursor ? { id: { lt: cursor } } : undefined,
+        where,
         orderBy: { createdAt: "desc" },
       });
 
