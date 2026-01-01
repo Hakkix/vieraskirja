@@ -12,10 +12,27 @@ import $Result = runtime.Types.Result
 
 export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
+/**
+ * Enums
+ */
+
+export namespace $Enums {
+  export const ModerationStatus: {
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED'
+  };
+
+  export type ModerationStatus = (typeof ModerationStatus)[keyof typeof ModerationStatus]
+}
+
+export type ModerationStatus = $Enums.ModerationStatus
+
+export const ModerationStatus: typeof $Enums.ModerationStatus
 
 /**
  * Model Post
- * 
+ *
  */
 export type Post = $Result.DefaultSelection<Prisma.$PostPayload>
 
@@ -885,6 +902,8 @@ export namespace Prisma {
     id: number | null
     name: string | null
     message: string | null
+    avatarSeed: string | null
+    moderationStatus: $Enums.ModerationStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -893,6 +912,8 @@ export namespace Prisma {
     id: number | null
     name: string | null
     message: string | null
+    avatarSeed: string | null
+    moderationStatus: $Enums.ModerationStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -901,6 +922,8 @@ export namespace Prisma {
     id: number
     name: number
     message: number
+    avatarSeed: number
+    moderationStatus: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1030,6 +1053,8 @@ export namespace Prisma {
     id: number
     name: string
     message: string
+    avatarSeed: string
+    moderationStatus: $Enums.ModerationStatus
     createdAt: Date
     updatedAt: Date
     _count: PostCountAggregateOutputType | null
@@ -1085,7 +1110,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "message" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
+  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "message" | "avatarSeed" | "moderationStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
 
   export type $PostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Post"
@@ -1094,6 +1119,8 @@ export namespace Prisma {
       id: number
       name: string
       message: string
+      avatarSeed: string
+      moderationStatus: $Enums.ModerationStatus
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["post"]>
@@ -1941,14 +1968,19 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
+
+
+  /**
+   * Reference to a field of type 'ModerationStatus'
+   */
+  export type EnumModerationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModerationStatus'>
 
 
   /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
+
   /**
    * Deep Input Types
    */
@@ -1961,6 +1993,8 @@ export namespace Prisma {
     id?: IntFilter<"Post"> | number
     name?: StringFilter<"Post"> | string
     message?: StringFilter<"Post"> | string
+    avatarSeed?: StringFilter<"Post"> | string
+    moderationStatus?: EnumModerationStatusFilter<"Post"> | $Enums.ModerationStatus
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
   }
@@ -1969,6 +2003,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     message?: SortOrder
+    avatarSeed?: SortOrder
+    moderationStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -1980,6 +2016,8 @@ export namespace Prisma {
     NOT?: PostWhereInput | PostWhereInput[]
     name?: StringFilter<"Post"> | string
     message?: StringFilter<"Post"> | string
+    avatarSeed?: StringFilter<"Post"> | string
+    moderationStatus?: EnumModerationStatusFilter<"Post"> | $Enums.ModerationStatus
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
   }, "id">
@@ -1988,6 +2026,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     message?: SortOrder
+    avatarSeed?: SortOrder
+    moderationStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PostCountOrderByAggregateInput
@@ -2004,6 +2044,8 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Post"> | number
     name?: StringWithAggregatesFilter<"Post"> | string
     message?: StringWithAggregatesFilter<"Post"> | string
+    avatarSeed?: StringWithAggregatesFilter<"Post"> | string
+    moderationStatus?: EnumModerationStatusWithAggregatesFilter<"Post"> | $Enums.ModerationStatus
     createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
   }
@@ -2011,6 +2053,8 @@ export namespace Prisma {
   export type PostCreateInput = {
     name: string
     message?: string
+    avatarSeed?: string
+    moderationStatus?: $Enums.ModerationStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2019,6 +2063,8 @@ export namespace Prisma {
     id?: number
     name: string
     message?: string
+    avatarSeed?: string
+    moderationStatus?: $Enums.ModerationStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2026,6 +2072,8 @@ export namespace Prisma {
   export type PostUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    avatarSeed?: StringFieldUpdateOperationsInput | string
+    moderationStatus?: EnumModerationStatusFieldUpdateOperationsInput | $Enums.ModerationStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2034,6 +2082,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    avatarSeed?: StringFieldUpdateOperationsInput | string
+    moderationStatus?: EnumModerationStatusFieldUpdateOperationsInput | $Enums.ModerationStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2042,6 +2092,8 @@ export namespace Prisma {
     id?: number
     name: string
     message?: string
+    avatarSeed?: string
+    moderationStatus?: $Enums.ModerationStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -2049,6 +2101,8 @@ export namespace Prisma {
   export type PostUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    avatarSeed?: StringFieldUpdateOperationsInput | string
+    moderationStatus?: EnumModerationStatusFieldUpdateOperationsInput | $Enums.ModerationStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2057,6 +2111,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
+    avatarSeed?: StringFieldUpdateOperationsInput | string
+    moderationStatus?: EnumModerationStatusFieldUpdateOperationsInput | $Enums.ModerationStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -2097,10 +2153,19 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type EnumModerationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationStatus | EnumModerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationStatus[]
+    notIn?: $Enums.ModerationStatus[]
+    not?: NestedEnumModerationStatusFilter<$PrismaModel> | $Enums.ModerationStatus
+  }
+
   export type PostCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     message?: SortOrder
+    avatarSeed?: SortOrder
+    moderationStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -2176,8 +2241,22 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type EnumModerationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationStatus | EnumModerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationStatus[]
+    notIn?: $Enums.ModerationStatus[]
+    not?: NestedEnumModerationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ModerationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumModerationStatusFilter<$PrismaModel>
+    _max?: NestedEnumModerationStatusFilter<$PrismaModel>
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type EnumModerationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ModerationStatus
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -2226,6 +2305,13 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedEnumModerationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationStatus | EnumModerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationStatus[]
+    notIn?: $Enums.ModerationStatus[]
+    not?: NestedEnumModerationStatusFilter<$PrismaModel> | $Enums.ModerationStatus
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -2284,6 +2370,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumModerationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationStatus | EnumModerationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationStatus[]
+    notIn?: $Enums.ModerationStatus[]
+    not?: NestedEnumModerationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ModerationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumModerationStatusFilter<$PrismaModel>
+    _max?: NestedEnumModerationStatusFilter<$PrismaModel>
   }
 
 

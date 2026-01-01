@@ -7,16 +7,25 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  name      String
-  message   String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int              @id @default(autoincrement())
+  name            String
+  message         String           @default("")
+  avatarSeed      String           @default("")
+  moderationStatus ModerationStatus @default(PENDING)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@index([name])
+  @@index([moderationStatus])
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
