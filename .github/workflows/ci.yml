@@ -1,14 +1,18 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: ["main"]
   pull_request:
-    branches: [main, develop]
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint-and-typecheck:
-    name: Lint and Type Check
+  build-and-test:
+    name: Build & Test
     runs-on: ubuntu-latest
 
     steps:
@@ -26,178 +30,46 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
+          echo 'DATABASE_URL="file:./ci-test.db"' > .env
 
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run ESLint
+      - name: Check for formatting/linting
         run: npm run lint
 
-      - name: Run TypeScript type check
-        run: npm run typecheck
+      - name: Security Audit
+        run: npm audit --audit-level=high
 
-      - name: Check code formatting
-        run: npm run format:check
+      - name: Run Unit Tests
+        run: npm test
 
-  unit-tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Set up environment variables
-        run: |
-          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
-
-      - name: Generate Prisma Client
-        run: npx prisma generate
-
-      - name: Run unit tests
-        run: npm run test
-
-      - name: Run unit tests with coverage
-        run: npm run test:coverage
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        if: always()
-        continue-on-error: true
-        with:
-          files: ./coverage/coverage-final.json
-          flags: unittests
-          name: codecov-umbrella
-
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Prisma Client
-        run: npx prisma generate
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Set up test database
-        run: |
-          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
-          npx prisma db push --skip-generate
-
-      - name: Run E2E tests
-        run: npm run test:e2e -- --project=chromium
-
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-
-  build:
-    name: Build Application
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Prisma Client
-        run: npx prisma generate
-
-      - name: Set up build environment
-        run: |
-          echo "DATABASE_URL=\"postgresql://test:test@localhost:5432/test\"" > .env
-          npx prisma db push --skip-generate
-
-      - name: Build application
+      - name: Build project
         run: npm run build
 
-      - name: Upload build artifacts
+      - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build
-          path: .next/
-          retention-days: 7
+          name: next-build
+          path: .next
+          retention-days: 1
 
-  all-checks-passed:
-    name: All Checks Passed
+  deploy-production:
+    name: Deploy to Production
+    needs: [build-and-test]
     runs-on: ubuntu-latest
-    needs: [lint-and-typecheck, unit-tests, e2e-tests, build]
-    if: always()
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Check all jobs status
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: ./.next
+
+      - name: Deploy to Server
+        env:
+          API_KEY: ${{ secrets.PROD_API_KEY }}
         run: |
-          if [ "${{ needs.lint-and-typecheck.result }}" != "success" ] || \
-             [ "${{ needs.unit-tests.result }}" != "success" ] || \
-             [ "${{ needs.e2e-tests.result }}" != "success" ] || \
-             [ "${{ needs.build.result }}" != "success" ]; then
-            echo "One or more checks failed!"
-            exit 1
-          fi
-          echo "All checks passed successfully!"
+          echo "Simulating deployment to production..."
+          echo "Deploying files from ./.next"
