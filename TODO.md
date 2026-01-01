@@ -35,8 +35,10 @@
 - [x] Set up CI/CD pipeline
 - [ ] Add error monitoring (Sentry)
 - [ ] Implement proper logging
+- [ ] Replace in-memory rate limiting with a shared store (e.g., Upstash Redis) for multi-instance deployments
 - [ ] Add API rate limiting
 - [ ] Set up database migrations workflow
+- [ ] Move email notifications to a background job/queue with retries and structured logging/alerting
 
 ## Documentation
 
@@ -59,6 +61,8 @@
 - [ ] Add content security policy (CSP)
 - [ ] Set up security headers
 - [ ] Add SQL injection prevention checks
+- [ ] Add server-side authentication/authorization for admin & moderation APIs (remove public access and hardcoded admin key)
+- [ ] Introduce audit logging for admin moderation actions and failed login attempts
 
 ## Nice to Have
 
