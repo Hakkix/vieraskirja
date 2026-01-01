@@ -95,6 +95,8 @@ exports.Prisma.PostScalarFieldEnum = {
   id: 'id',
   name: 'name',
   message: 'message',
+  avatarSeed: 'avatarSeed',
+  moderationStatus: 'moderationStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -102,6 +104,12 @@ exports.Prisma.PostScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.ModerationStatus = exports.$Enums.ModerationStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
 };
 
 

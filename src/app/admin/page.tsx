@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { api } from "~/trpc/react";
 import { StatsSkeleton, AdminPostListSkeleton } from "~/app/_components/skeleton";
+import { getAvatarUrl } from "~/utils/avatar";
 
 type ModerationStatus = "PENDING" | "APPROVED" | "REJECTED";
 
@@ -164,7 +165,7 @@ function AdminPanelContent({
                       {post.avatarSeed && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.avatarSeed}`}
+                          src={getAvatarUrl(post.avatarSeed, "avataaars")}
                           alt={`${post.name}'s avatar`}
                           className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex-shrink-0"
                         />
