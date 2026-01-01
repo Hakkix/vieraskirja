@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { sendNewEntryNotification } from "~/server/email";
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
@@ -20,13 +21,25 @@ export const postRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.post.create({
+      const post = await ctx.db.post.create({
         data: {
           name: input.name,
           message: input.message,
           avatarSeed: input.avatarSeed ?? "",
         },
       });
+
+      // Send email notification asynchronously (fire and forget)
+      // This won't block the response to the user
+      sendNewEntryNotification({
+        name: post.name,
+        message: post.message,
+        createdAt: post.createdAt,
+      }).catch((error) => {
+        console.error("Failed to send email notification:", error);
+      });
+
+      return post;
     }),
 
   getLatest: publicProcedure.query(async ({ ctx }) => {
