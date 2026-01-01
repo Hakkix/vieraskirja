@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function Error({
   error,
@@ -42,12 +43,12 @@ export default function Error({
           >
             Yritä uudelleen
           </button>
-          <a
+          <Link
             href="/"
             className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20 active:bg-white/30 border border-white/20"
           >
             Palaa etusivulle
-          </a>
+          </Link>
         </div>
 
         <div className="mt-8 opacity-50">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { api } from "~/trpc/react";
 import { StatsSkeleton, AdminPostListSkeleton } from "~/app/_components/skeleton";
 
@@ -94,12 +95,12 @@ function AdminPanelContent({
       <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="mb-6 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Moderation Panel</h1>
-          <a
+          <Link
             href="/"
             className="rounded-lg bg-indigo-600 text-white px-4 py-2.5 sm:py-2 transition hover:bg-indigo-700 active:scale-98 text-center dark:bg-white/20 dark:hover:bg-white/30"
           >
             Back to Site
-          </a>
+          </Link>
         </div>
 
         {/* Stats */}

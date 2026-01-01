@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { type DeepMockProxy } from "vitest-mock-extended";
 import { type PrismaClient } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
 import { createMockDb, createTestCaller } from "~/test/helpers";
 
 // Mock the email module
