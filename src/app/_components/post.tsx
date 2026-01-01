@@ -534,7 +534,6 @@ export function GuestbookEntries() {
                           {post.avatarSeed ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
-                              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                               src={getAvatarUrl(post.avatarSeed, "adventurer")}
                               alt={`${post.name}'s avatar`}
                               className="h-full w-full"
