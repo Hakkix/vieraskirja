@@ -13,6 +13,7 @@
 - **Modern UI/UX** - Gradient backgrounds, smooth animations, responsive design, and Finnish language support
 - **Type Safety** - End-to-end type safety with tRPC and TypeScript
 - **Email Notifications** - Automatic email notifications when new guestbook entries are created (optional, uses Resend)
+- **Moderation/Admin Panel** - Content moderation system with admin panel for reviewing and approving/rejecting posts
 
 ## Tech Stack (T3 Stack)
 
@@ -35,6 +36,8 @@ vieraskirja/
 │   ├── app/                    # Next.js App Router pages and components
 │   │   ├── _components/        # Shared components
 │   │   │   └── post.tsx       # Post component
+│   │   ├── admin/             # Admin panel
+│   │   │   └── page.tsx       # Moderation interface
 │   │   ├── api/trpc/          # tRPC API endpoint
 │   │   ├── layout.tsx         # Root layout
 │   │   └── page.tsx           # Home page
@@ -64,13 +67,22 @@ Located in `prisma/schema.prisma`
 
 ```prisma
 model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    message   String   @default("")
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id              Int              @id @default(autoincrement())
+    name            String
+    message         String           @default("")
+    avatarSeed      String           @default("")
+    moderationStatus ModerationStatus @default(PENDING)
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime         @updatedAt
 
     @@index([name])
+    @@index([moderationStatus])
+}
+
+enum ModerationStatus {
+    PENDING
+    APPROVED
+    REJECTED
 }
 ```
 
@@ -101,10 +113,37 @@ All API logic is in `src/server/api/routers/post.ts`
    - Returns: Latest post (by createdAt) or null
 
 4. **getAll** (query)
-   - Input: `{ limit?: number (1-100, default: 10), cursor?: number }`
-   - Returns: Paginated posts with cursor-based pagination
+   - Input: `{ limit?: number (1-100, default: 10), cursor?: number, search?: string }`
+   - Returns: Paginated approved posts with cursor-based pagination
    - Output: `{ posts: Post[], nextCursor?: number }`
    - Posts are ordered by createdAt descending
+   - Only returns posts with moderationStatus: "APPROVED"
+
+5. **update** (mutation)
+   - Input: `{ id: number, name: string, message: string }`
+   - Updates an existing post
+   - Returns: Updated post object
+
+6. **delete** (mutation)
+   - Input: `{ id: number }`
+   - Deletes a post
+   - Returns: Deleted post object
+
+7. **getAllForModeration** (query)
+   - Input: `{ limit?: number (1-100, default: 10), cursor?: number, status?: "PENDING" | "APPROVED" | "REJECTED" }`
+   - Returns: Paginated posts for moderation (all statuses)
+   - Output: `{ posts: Post[], nextCursor?: number }`
+   - For admin panel use
+
+8. **moderate** (mutation)
+   - Input: `{ id: number, status: "PENDING" | "APPROVED" | "REJECTED" }`
+   - Updates the moderation status of a post
+   - Returns: Updated post object
+
+9. **getModerationStats** (query)
+   - No input required
+   - Returns: Statistics for moderation
+   - Output: `{ pending: number, approved: number, rejected: number, total: number }`
 
 ### Adding New Endpoints
 
@@ -154,6 +193,15 @@ To add new tRPC procedures:
    4. Set `EMAIL_TO` to the email address where you want to receive notifications
 
    **Note:** Email notifications are completely optional. If these variables are not set, the app will work normally but won't send notifications.
+
+   **Admin Panel Access (Optional):**
+
+   To secure the admin panel with a password, add this variable:
+   ```
+   NEXT_PUBLIC_ADMIN_KEY="your-secure-admin-password"
+   ```
+
+   **Note:** If not set, the admin panel will use a default password "admin123" for development. For production, always set a strong admin key.
 
 2. **Install Dependencies:**
    ```bash
@@ -313,14 +361,51 @@ EMAIL_TO="your-email@example.com"
 **For Vercel deployment:**
 Add the same environment variables in your Vercel project settings.
 
+### Moderation/Admin Panel
+
+The application includes a content moderation system with an admin panel for reviewing and managing guestbook entries.
+
+**How it works:**
+- All new guestbook entries are created with `moderationStatus: "PENDING"` by default
+- The public guestbook page (`/`) only displays posts with `moderationStatus: "APPROVED"`
+- Admins can access the moderation panel at `/admin` to review pending posts
+- Admins can approve, reject, or reset posts to pending status
+- The admin panel shows statistics (pending, approved, rejected, total) and allows filtering by status
+
+**Accessing the Admin Panel:**
+1. Navigate to `/admin` in your browser
+2. Enter the admin key (default: "admin123" for development)
+3. Review and moderate posts
+
+**Configuration:**
+Set this environment variable in your `.env` file for production:
+```
+NEXT_PUBLIC_ADMIN_KEY="your-secure-admin-password"
+```
+
+**Important:** The current implementation uses simple password-based authentication. For production use, consider implementing proper authentication with NextAuth.js or similar.
+
+**Implementation details:**
+- Admin panel UI is in `src/app/admin/page.tsx`
+- Moderation endpoints are in `src/server/api/routers/post.ts`:
+  - `getAllForModeration` - Get posts for moderation (all statuses)
+  - `moderate` - Update moderation status
+  - `getModerationStats` - Get moderation statistics
+- Database schema includes `ModerationStatus` enum with values: PENDING, APPROVED, REJECTED
+- The `getAll` endpoint filters to only return approved posts
+
+**For Vercel deployment:**
+Add the `NEXT_PUBLIC_ADMIN_KEY` environment variable in your Vercel project settings.
+
 ## Key Files Reference
 
-- `src/server/api/routers/post.ts` - Backend API logic
+- `src/server/api/routers/post.ts` - Backend API logic (CRUD + moderation endpoints)
 - `src/app/page.tsx` - Home page
+- `src/app/admin/page.tsx` - Admin panel for moderation
 - `src/app/_components/post.tsx` - Post component
 - `src/server/db.ts` - Database client
 - `src/server/email.ts` - Email notification utilities
-- `prisma/schema.prisma` - Database schema
+- `prisma/schema.prisma` - Database schema (includes ModerationStatus enum)
 - `.env` - Environment variables
 - `package.json` - Dependencies and scripts
 
