@@ -14,7 +14,6 @@ const config = {
     // Reduce initial compilation time
     resolveAlias: {
       // Skip unnecessary polyfills
-      canvas: false,
     },
   },
 
