@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 import { GuestbookForm, GuestbookEntries } from "~/app/_components/post";
 import { PostListSkeleton } from "~/app/_components/skeleton";
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 
 // Force dynamic rendering to prevent build-time database access
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  void api.post.getAll.prefetchInfinite({ limit: 10 });
+  // Removed prefetch to speed up initial page load
+  // Data will be fetched client-side by GuestbookEntries component
 
   return (
     <HydrateClient>
