@@ -73,6 +73,7 @@ describe("postRouter", () => {
           name: "John Doe",
           message: "Hello, world!",
           avatarSeed: "seed123",
+          moderationStatus: "APPROVED",
         },
       });
     });
@@ -100,6 +101,7 @@ describe("postRouter", () => {
           name: "Jane Doe",
           message: "Test message",
           avatarSeed: "",
+          moderationStatus: "APPROVED",
         },
       });
     });
