@@ -21,7 +21,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed top-4 right-4 z-50 rounded-full bg-white/10 p-3 text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-110 active:scale-95 dark:bg-gray-800/50 dark:hover:bg-gray-700/50"
+      className="fixed top-4 right-4 z-50 rounded-full bg-gray-800/80 p-3 text-white backdrop-blur-sm transition-all duration-200 hover:bg-gray-900 hover:scale-110 active:scale-95 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
       aria-label={theme === "dark" ? "Vaihda vaaleaan tilaan" : "Vaihda tummaan tilaan"}
       title={theme === "dark" ? "Vaihda vaaleaan tilaan" : "Vaihda tummaan tilaan"}
     >
