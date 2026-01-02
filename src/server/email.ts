@@ -1,8 +1,11 @@
+import { type Resend as ResendType } from "resend";
 import { Resend } from "resend";
 import { env } from "~/env";
 
 // Initialize Resend client (only if API key is provided)
-const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
+const resend: ResendType | null = env.RESEND_API_KEY
+  ? new Resend(env.RESEND_API_KEY)
+  : null;
 
 const logDebug = (...messages: unknown[]) => {
   if (env.NODE_ENV !== "production") {
@@ -16,6 +19,13 @@ interface SendNewEntryNotificationParams {
   createdAt: Date;
 }
 
+interface EmailNotificationResult {
+  success: boolean;
+  reason?: string;
+  error?: unknown;
+  data?: unknown;
+}
+
 /**
  * Sends an email notification when a new guestbook entry is created
  * Only sends if all required environment variables are configured
@@ -24,7 +34,7 @@ export async function sendNewEntryNotification({
   name,
   message,
   createdAt,
-}: SendNewEntryNotificationParams) {
+}: SendNewEntryNotificationParams): Promise<EmailNotificationResult> {
   // Skip if email is not configured
   if (!resend || !env.EMAIL_FROM || !env.EMAIL_TO) {
     logDebug(
@@ -34,7 +44,7 @@ export async function sendNewEntryNotification({
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const response = await resend.emails.send({
       from: env.EMAIL_FROM,
       to: env.EMAIL_TO,
       subject: `New Guestbook Entry from ${name}`,
@@ -139,14 +149,14 @@ This is an automated notification from your Vieraskirja guestbook.
       `.trim(),
     });
 
-    if (error) {
-      console.error("Failed to send email notification:", error);
-      return { success: false, error };
+    if (response.error) {
+      console.error("Failed to send email notification:", response.error);
+      return { success: false, error: response.error };
     }
 
-    logDebug("Email notification sent successfully:", data);
-    return { success: true, data };
-  } catch (error) {
+    logDebug("Email notification sent successfully:", response.data);
+    return { success: true, data: response.data };
+  } catch (error: unknown) {
     console.error("Error sending email notification:", error);
     return { success: false, error };
   }
