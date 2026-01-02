@@ -36,7 +36,6 @@ export const postRouter = createTRPCRouter({
           name: input.name,
           message: input.message,
           avatarSeed: input.avatarSeed ?? "",
-          moderationStatus: "APPROVED",
         },
       });
 
