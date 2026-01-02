@@ -36,6 +36,7 @@ export const postRouter = createTRPCRouter({
           name: input.name,
           message: input.message,
           avatarSeed: input.avatarSeed ?? "",
+          moderationStatus: "APPROVED", // Auto-approve new posts so they appear immediately
         },
       });
 
