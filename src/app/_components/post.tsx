@@ -251,12 +251,22 @@ export function GuestbookEntries() {
   const [editName, setEditName] = useState("");
   const [editMessage, setEditMessage] = useState("");
   const [editErrors, setEditErrors] = useState<ValidationErrors>({});
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [newlyCreatedId, setNewlyCreatedId] = useState<number | null>(null);
+
+  // Debounce search input to avoid suspense on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   const [data, { fetchNextPage, hasNextPage, isFetchingNextPage }] =
     api.post.getAll.useSuspenseInfiniteQuery(
-      { limit: 10, search: searchQuery || undefined },
+      { limit: 10, search: debouncedSearch || undefined },
       { getNextPageParam: (lastPage) => lastPage.nextCursor },
     );
 
@@ -390,14 +400,14 @@ export function GuestbookEntries() {
         <input
           type="text"
           placeholder="Etsi nimestä tai viestistä..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           className="w-full rounded-lg bg-white border border-gray-300 py-3 pl-11 pr-4 text-gray-900 placeholder:text-gray-500 dark:bg-white/10 dark:border-transparent dark:text-white dark:placeholder:text-white/50 transition-all duration-200 focus:bg-white dark:focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white/30"
           aria-label="Etsi vieraskirjamerkintöjä"
         />
-        {searchQuery && (
+        {searchInput && (
           <button
-            onClick={() => setSearchQuery("")}
+            onClick={() => setSearchInput("")}
             className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 hover:text-gray-700 dark:text-white/50 dark:hover:text-white transition-colors"
             aria-label="Tyhjennä haku"
           >
@@ -427,13 +437,13 @@ export function GuestbookEntries() {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            {searchQuery ? (
+            {debouncedSearch ? (
               <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             ) : (
               <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
             )}
           </svg>
-          {searchQuery ? (
+          {debouncedSearch ? (
             <>
               <p className="text-base sm:text-lg font-medium text-gray-700 dark:text-white/70">Ei hakutuloksia</p>
               <p className="text-sm text-gray-600 dark:text-white/50 text-center">Kokeile hakea toisella hakusanalla</p>
