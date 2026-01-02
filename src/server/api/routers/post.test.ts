@@ -256,8 +256,8 @@ describe("postRouter", () => {
         where: {
           moderationStatus: "APPROVED",
           OR: [
-            { name: { contains: "John", mode: "insensitive" } },
-            { message: { contains: "John", mode: "insensitive" } },
+            { name: { contains: "John" } },
+            { message: { contains: "John" } },
           ],
         },
         orderBy: { createdAt: "desc" },
