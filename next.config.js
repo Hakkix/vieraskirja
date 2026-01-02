@@ -9,24 +9,12 @@ if (process.env.NODE_ENV === 'production' || process.env.npm_lifecycle_event ===
 
 /** @type {import("next").NextConfig} */
 const config = {
-  // Turbopack optimizations
+  // Turbopack configuration
+  // Note: Turbopack has built-in filesystem caching, so no additional caching config needed
   turbopack: {
-    // Reduce initial compilation time
     resolveAlias: {
-      // Skip unnecessary polyfills
+      // Add any module aliases here if needed
     },
-  },
-
-  // Optimize webpack caching (fallback when not using turbopack)
-  webpack: (config, { dev, isServer }) => {
-    if (dev) {
-      // Enable persistent caching in development
-      config.cache = {
-        type: 'filesystem',
-        compression: false, // Faster on macOS
-      };
-    }
-    return config;
   },
 
   // Reduce overhead during development
