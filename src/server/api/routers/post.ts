@@ -78,8 +78,8 @@ export const postRouter = createTRPCRouter({
         ...(search
           ? {
               OR: [
-                { name: { contains: search, mode: "insensitive" as const } },
-                { message: { contains: search, mode: "insensitive" as const } },
+                { name: { contains: search } },
+                { message: { contains: search } },
               ],
             }
           : {}),
